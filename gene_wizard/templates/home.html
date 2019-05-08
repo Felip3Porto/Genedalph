@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <!-- Bootstrap CSS -->
+  <!-- if you have the bootstrap files downloaded you can reference the css folder here -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<style>
+body {
+  font-family: Ubuntu;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+form.example input[type=text] {
+  padding: 10px;
+  font-size: 17px;
+  border: 1px solid grey;
+  float: left;
+  width: 80%;
+  background: #f1f1f1;
+}
+
+form.example button {
+  float: left;
+  width: 20%;
+  padding: 10px;
+  background: #2196F3;
+  color: white;
+  font-size: 17px;
+  border: 1px solid grey;
+  border-left: none;
+  cursor: pointer;
+}
+
+form.example button:hover {
+  background: #0b7dda;
+}
+
+form.example::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+</style>
+</head>
+
+<!-- Inserting the Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="#">Genedalph</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">About</a>
+        </li>
+      </ul>
+      <form class="form-inline my-2 my-lg-0" method= "POST">
+        <input class="form-control mr-sm-2" type="text" placeholder="Search" name="lncRNA_name" aria-label="Search">
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+      </form>
+    </div>
+  </nav>
+<body>
+<h1>
+  
+</h1>
+<h2>
+    <center>Search lncRNAs</center>
+</h2>
+
+
+<!-- button needs an action -->
+<form method= "POST" action="" class="example" style="margin:auto;max-width:300px">
+  <input type="text" placeholder="Search.." name="lncRNA_name">
+  <button type="submit"><i class="fa fa-search"></i></button>
+</form>
+<center>
+  <div class="container">
+    <h4> Search for any of the lncRNA experiments currently available </h4>
+      <table class="table-striped table-hover table-condensed">
+          <tr>
+            <th> lncRNA  </th>
+            <th> cell line </th>
+          </tr>
+          <tr>
+              <td> DEANR1 </td>
+              <td> H9 </td>
+          </tr>
+          <tr>
+              <td> DNM3OS </td>
+              <td> SKOV3 </td>
+          </tr>
+          <tr>
+              <td> FDR0 </td>
+              <td> PANCR </td>
+          </tr>
+          <tr>
+              <td> Firre </td>
+              <td> Patski </td>
+          </tr>
+          <tr>
+              <td> FOXA2 </td>
+              <td> H9 </td>
+          </tr>
+          <tr>
+              <td> H19 </td>
+              <td> HTR </td>
+          </tr>
+          <tr>
+              <td> HNF1A-AS1 </td>
+              <td> EAC </td>
+          </tr>
+          <tr>
+              <td> IGFL2-AS1 </td>
+              <td> MCF10A-AT1 </td>
+          </tr>
+          <tr>
+              <td> lincDUSP </td>
+              <td> V481 </td>
+          </tr>
+          <tr>
+              <td> lincDUSP </td>
+              <td> V703 </td>
+          </tr>
+          <tr>
+              <td> MANCR </td>
+              <td> MDA-MB-231 </td>
+          </tr>
+          <tr>
+              <td> PANCR </td>
+              <td> H9-Cardiomyocyte </td>
+          </tr>
+          <tr>
+              <td> SENCR </td>
+              <td> HCASMCs </td>
+          </tr>
+       </table>
+  </div>
+    <pre>
+        ,---.
+        /    |
+       /     |
+      /      |
+     /       |
+___,'        |
+  -'          :
+`-.__..--'``-,_\_
+  |o/ ` :O.)_`>
+  :/ `     ||/)
+  (_.).__,-` |\
+  /( `.``   `| :
+  \'`-.)  `  ; ;
+   \________/ 
+    </pre>
+</center>
+</body>
+</html>

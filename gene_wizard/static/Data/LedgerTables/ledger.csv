@@ -1,0 +1,14 @@
+cell_line,lncRNA_name,path_to_DGE,replicate_id,roster_id
+H9,DEANR1,Data/ExpressionTables/genedDEANR1.txt,1,1
+SKOV3,DNM3OS,Data/ExpressionTables/genedDNM3OS.txt,1,2
+PANCR,FDR0,Data/ExpressionTables/genedFDR0.txt,1,3
+Patski,Firre,Data/ExpressionTables/genedFirre.txt,1,4
+H9,FOXA2,Data/ExpressionTables/genedFOXA2.txt,1,5
+HTR,H19,Data/ExpressionTables/genedH19.txt,1,6
+EAC,HNF1A-AS1,Data/ExpressionTables/genedHNF1A_AS1.txt,1,7
+MCF10A-AT1,IGFL2-AS1,Data/ExpressionTables/genedIGFL2_AS1.txt,1,8
+V481,lincDUSP,Data/ExpressionTables/genedV481_lincDUSP.txt,1,9
+V703,lincDUSP,Data/ExpressionTables/genedV703_lincDUSP.txt,1,10
+MDA-MB-231,MANCR,Data/ExpressionTables/genedMANCR.txt,1,11
+H9-Cardiomyocyte,PANCR,Data/ExpressionTables/genedPANCR.txt,1,12
+HCASMCs,SENCR,Data/ExpressionTables/genedSENCR.txt,1,13

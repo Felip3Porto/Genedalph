@@ -1,0 +1,52 @@
+MariaDB [Genedalfv2]> SHOW COLUMNS FROM Expression;
++-----------------------------+----------------+------+-----+---------+-------+
+| Field                       | Type           | Null | Key | Default | Extra |
++-----------------------------+----------------+------+-----+---------+-------+
+| expression_id               | int(11)        | NO   | PRI | NULL    |       |
+| ENSG_id                     | varchar(45)    | YES  |     | NULL    |       |
+| gene_symbol                 | varchar(69)    | YES  |     | NULL    |       |
+| baseMean                    | decimal(45,25) | YES  |     | NULL    |       |
+| log2FoldChange              | decimal(45,25) | YES  |     | NULL    |       |
+| lfcSE                       | decimal(45,25) | YES  |     | NULL    |       |
+| pvalue                      | decimal(45,25) | YES  |     | NULL    |       |
+| stat                        | decimal(45,25) | YES  |     | NULL    |       |
+| padj                        | decimal(45,25) | YES  |     | NULL    |       |
+| DEG_lncRNA_roster_roster_id | int(11)        | NO   | MUL | NULL    |       |
++-----------------------------+----------------+------+-----+---------+-------+
+
+MariaDB [Genedalfv2]> SHOW COLUMNS FROM DEG_lncRNA_roster;
++--------------+--------------+------+-----+---------+-------+
+| Field        | Type         | Null | Key | Default | Extra |
++--------------+--------------+------+-----+---------+-------+
+| roster_id    | int(11)      | NO   | PRI | NULL    |       |
+| cell_line    | varchar(45)  | YES  |     | NULL    |       |
+| lncRNA_name  | varchar(100) | YES  |     | NULL    |       |
+| replicate_id | int(11)      | YES  |     | NULL    |       |
+| path_to_DGE  | varchar(200) | YES  |     | NULL    |       |
++--------------+--------------+------+-----+---------+-------+
+
+MariaDB [Genedalfv2]> SHOW COLUMNS FROM GSEA_reports;
++-----------------------+----------------+------+-----+---------+-------+
+| Field                 | Type           | Null | Key | Default | Extra |
++-----------------------+----------------+------+-----+---------+-------+
+| reports_id            | int(11)        | NO   | PRI | NULL    |       |
+| Term                  | varchar(240)   | YES  |     | NULL    |       |
+| es                    | decimal(20,18) | YES  |     | NULL    |       |
+| nes                   | decimal(20,18) | YES  |     | NULL    |       |
+| pval                  | decimal(20,18) | YES  |     | NULL    |       |
+| fdr                   | decimal(20,18) | YES  |     | NULL    |       |
+| geneset_size          | int(11)        | YES  |     | NULL    |       |
+| matched_size          | int(11)        | YES  |     | NULL    |       |
+| path_to_plot          | varchar(250)   | YES  |     | NULL    |       |
+| PreRanking_prerank_id | int(11)        | NO   | MUL | NULL    |       |
++-----------------------+----------------+------+-----+---------+-------+
+
+MariaDB [Genedalfv2]> SHOW COLUMNS FROM PreRanking;
++--------------------------+--------------+------+-----+---------+-------+
+| Field                    | Type         | Null | Key | Default | Extra |
++--------------------------+--------------+------+-----+---------+-------+
+| prerank_id               | int(11)      | NO   | PRI | NULL    |       |
+| path_to_prerank          | varchar(200) | YES  |     | NULL    |       |
+| path_to_GO_enrichment    | varchar(200) | YES  |     | NULL    |       |
+| Expression_expression_id | int(11)      | NO   | MUL | NULL    |       |
++--------------------------+--------------+------+-----+---------+-------+

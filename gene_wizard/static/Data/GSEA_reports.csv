@@ -1,0 +1,2 @@
+reports_id,Term,es  ,nes ,pval ,fdr ,geneset_size,matched_size,path_to_plot ,PreRanking_prerank_id
+1,negative regulation of cellular protein metabolic process (GO:0032269),0.727951847916679,1.03462122872551,0.272,1,90,36,Data/Reports/SENCR_up_report/negative regulation of cellular protein metabolic process (GO_0032269).prerank.png,20

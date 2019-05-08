@@ -1,0 +1,11 @@
+img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+  @font-face {
+    font-family: 'Ubuntu';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Ubuntu'), local('Ubuntu'), url("//themes.googleusercontent.com/static/fonts/opensans/v6/u-WUoqrET9fUeobQW7jkRT8E0i7KZn-EPnyo3HZu7kw.woff") format('woff');
+  }
