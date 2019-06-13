@@ -61,6 +61,22 @@ def home():
 # def about():
 #     return render_template('about.html', title = 'About')
 
+@app.route('/gProfilerTest')
+def gProfilerTest():
+
+    conn = mysql.connect()
+    cursor = conn.cursor()
+    try: 
+        cursor.execute("SELECT DISTINCT e.ENSG_id FROM DEG_lncRNA_roster d, Expression e WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id AND d.lncRNA_name = 'MANCR' AND e.log2FoldChange < 0;") 
+        genes_down = cursor.fetchall()
+        
+        cursor.execute("SELECT DISTINCT e.gene_symbol FROM DEG_lncRNA_roster d, Expression e WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id AND d.lncRNA_name = 'MANCR' AND e.log2FoldChange > 0;") 
+        genes_up = cursor.fetchall()
+        
+    finally: 
+        cursor.close()
+
+    return render_template('gProfilerTest.html', genes_down=genes_down, genes_up=genes_up)
 
 @app.route('/test')
 def test():
