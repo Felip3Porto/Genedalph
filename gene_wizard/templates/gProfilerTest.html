@@ -1,0 +1,96 @@
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <title> Gprofiler Javascript test</title>
+    <!-- located in the "static" file -->
+    <script src="static/biojs-vis-gprofiler/build/biojsvisgprofiler.min.js"></script>
+    <script type="text/javascript">
+
+    document.addEventListener("DOMContentLoaded", function(e) {
+        gp = new biojsVisGprofiler({
+          container : "#myContainer",
+          width     : 600,
+          height    : 600,
+        });
+      
+        gp.on("onrender", function() {
+          console.log("caught render event");
+          // console.log(genes_up[0]);
+        });
+        
+        // array like my data I pass
+        function json2array(json){
+          var result = [];
+          var keys = Object.keys(json);
+          keys.forEach(function(key){
+            result.push(json[key]);
+          });
+          return result;
+        }
+        // flatten the data 
+        var genes_up = {{ genes_up|tojson }};
+        // var dato = genes_up[0]; just gets one
+        var commasep = genes_up.join(",");
+        // console.log(commasep);
+        var up_array = commasep.split(',');
+        var str_result = '\[\"' + commasep.split(',').join('\",\"') + '\"\]';
+        // console.log(up_array);
+        var gene_up_list = json2array(genes_up); 
+        
+        
+        // var serialized_up = JSON.stringify(gene_up_list);
+
+        gp.render({
+        // query   : gene_up_list,
+        query : up_array, 
+        organism: "hsapiens",
+        srcFilter: ["GO:MF","GO:CC","GO:BP","KEGG","REAC","WP"],
+        correctionMethod: "bonferroni", 
+        userThreshold: 1e-8
+      });
+      
+      gOST = gp.getGProfiler({});
+    
+
+    // unfortunately this makes too big of a url 
+    var urlQuery = gOST.getQueryURL({
+        query   : up_array,
+        organism: "hsapiens",
+        srcFilter: ["GO:MF","GO:CC","GO:BP","KEGG","REAC","WP"],
+        correctionMethod: "bonferroni", 
+        userThreshold: 1e-8
+      });
+      console.log('https://biit.cs.ut.ee/gprofiler/gost/?organism=hsapiens&all_results=false&ordered=false&no_iea=false&measure_underrepresentation=false&significance_threshold_method=bonferroni&domain_scope=annotated&sources=GO%3AMF%2CGO%3ACC%2CGO%3ABP%2CKEGG%2CREAC%2CWP&no_evidences=true&user_threshold=1e-8&');
+      console.log(urlQuery);
+      function visitPage(){
+        window.location=urlQuery;
+      }
+
+
+    // // after designating a call back it does not display
+    // // no error messaages here either so maybe this needs to include a different callback
+
+    // renderable = gOST.query({
+    //     query   : ["CASQ2", "CASQ1", "GSTO1", "DMD", "GSTM2"],
+    //     organism: "hsapiens",
+    //     srcFilter: ["GO:MF","GO:CC","GO:BP","KEGG","REAC","WP"],
+    //     correctionMethod: "bonferroni", 
+    //     userThreshold: 1e-8
+    // }, gOST.getRootURL// callback function
+    // );
+
+    // gp.render(renderable);
+
+    });
+
+    </script>
+    <button onclick="visitPage();">Visit Page Now</button>
+  </head>
+  <body>
+    
+    <p>Here is an example using g:Profilers word cloud api</p>
+     
+    <div id="myContainer"></div>
+  </body>
+</html>
