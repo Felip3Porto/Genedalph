@@ -132,6 +132,7 @@ def gProfilerTest():
         x=xGOtermsUp,
         y=yPadjUp,
         text=GOtextUp,
+        name='Significantly Up Regulated Genes',
         marker=dict(color='rgb(158,202,225)',
         line=dict(
             color='rgb(8,48,107)',
@@ -139,21 +140,11 @@ def gProfilerTest():
             ),
             opacity=0.6
         )
-    # keep the meat in trace 0 
-    dataUp = [traceUp]
-    # add the title
-    layoutUp = go.Layout(
-        title='Gene up regulated funtions',
-        yaxis=dict(title = '-log(adjusted p-value)')
-        )
-    # output_type='div' 
-    figUp = go.Figure(data=dataUp, layout=layoutUp)
-    div_Up = plot(figUp, output_type='div', filename='up_regulated_bars')
-
     traceDown = go.Bar(
         x=xGOtermsDown,
         y=yPadjDown,
         text=GOtextDown,
+        name='Significantly Down Regulated Genes',
         marker=dict(color='rgb(214,39,40)',
         line=dict(
             color='rgb(247,182,210)',
@@ -162,12 +153,7 @@ def gProfilerTest():
             opacity=0.6
         )
     # keep the meat in trace 0 
-    dataDown = [traceDown]
-    # add the title
-    layoutDown = go.Layout(
-        title='Gene rDown egulated funtions',
-        yaxis=dict(title = '-log(adjusted p-value)')
-        )
+    
     # try to unify 
     data = [traceUp, traceDown]
     layout= go.Layout(
@@ -177,9 +163,7 @@ def gProfilerTest():
     fig = go.Figure(data=data, layout=layout)
     div_holder = plot(fig, output_type='div',  filename='straight_bars') 
 
-    # output_type='div' 
-    figDown = go.Figure(data=dataDown, layout=layoutDown)
-    div_Down = plot(figDown, output_type='div',  filename='down_regulated_bars')     
+       
     # since it is a dict cursor try sending the df as a dict or json
     return render_template('gProfilerTest.html', genes_down=genes_down, genes_up=genes_up, div_holder=Markup(div_holder)) #, jsonify(result={"status": 200})
 
