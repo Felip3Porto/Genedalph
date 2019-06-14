@@ -63,7 +63,56 @@
       //}
 
     });
-
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function(e) {
+          gp = new biojsVisGprofiler({
+            container : "#DownCloud",
+            width     : 600,
+            height    : 600,
+          });
+        
+          gp.on("onrender", function() {
+            console.log("caught render event");
+            // console.log(genes_up[0]);
+          });
+          
+          // flatten the data 
+          var genes_down = {{ genes_down|tojson }};
+          // var dato = genes_up[0]; just gets one
+          var commasep = genes_down.join(",");
+          // console.log(commasep);
+          // THIS is the one that works 
+          var down_array = commasep.split(',');
+  
+          var str_result = '\[\"' + commasep.split(',').join('\",\"') + '\"\]';
+          // console.log(up_array);
+          
+          // var serialized_up = JSON.stringify(gene_up_list);
+  
+          gp.render({
+          // query   : gene_up_list,
+          query : down_array, 
+          organism: "hsapiens",
+          srcFilter: ["GO:MF","GO:CC","GO:BP","KEGG","REAC","WP"],
+          correctionMethod: "bonferroni", 
+          userThreshold: 1e-8
+        });
+        
+        gOST = gp.getGProfiler({});
+    
+      // unfortunately this makes too big of a url 
+      var urlQuery = gOST.getQueryURL({
+          query   : down_array,
+          organism: "hsapiens",
+          srcFilter: ["GO:MF","GO:CC","GO:BP","KEGG","REAC","WP"],
+          correctionMethod: "bonferroni", 
+          userThreshold: 1e-8
+        });
+        // console.log('https://biit.cs.ut.ee/gprofiler/gost/?organism=hsapiens&all_results=false&ordered=false&no_iea=false&measure_underrepresentation=false&significance_threshold_method=bonferroni&domain_scope=annotated&sources=GO%3AMF%2CGO%3ACC%2CGO%3ABP%2CKEGG%2CREAC%2CWP&no_evidences=true&user_threshold=1e-8');
+        console.log(urlQuery);
+  
+      });
     </script>
   </head>
   <body>
@@ -76,7 +125,7 @@
     <div id="myContainer">
       <!-- add a button to download a line separated list -->
       <button target="_blank" onclick="window.open('https://biit.cs.ut.ee/gprofiler/gost/?organism=hsapiens&all_results=false&ordered=false&no_iea=false&measure_underrepresentation=false&significance_threshold_method=bonferroni&domain_scope=annotated&sources=GO%3AMF%2CGO%3ACC%2CGO%3ABP%2CKEGG%2CREAC%2CWP&no_evidences=true&user_threshold=1e-8');">Visit Gprofiler for extensive reults for queried genes</button>
-      <input type="button" id="dwn-btn" value="Download query list of up regulated genes"/>
+      <input type="button" id="up-btn" value="Download query list of up regulated genes"/>
       <script>
           function download(filename, text) {
             var element = document.createElement('a');
@@ -92,7 +141,7 @@
         }
         
         // Start file download.
-        document.getElementById("dwn-btn").addEventListener("click", function(){
+        document.getElementById("up-btn").addEventListener("click", function(){
             // Generate download of hello.txt file with some content
             var text = "And blood-black nothingness began to spin... A system of cells interlinked within cells interlinked within cells interlinked within one stem... And dreadfully distinct against the dark, a tall white fountain played.";
             //document.getElementById("text-val").value;
@@ -108,9 +157,41 @@
         }, false);
       </script>
     </div>
+    <input type="button" id="dwn-btn" value="Download query list of down regulated genes"/>
+        <script>
+            function download(filename, text) {
+              var element = document.createElement('a');
+              element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+              element.setAttribute('download', filename);
+          
+              element.style.display = 'none';
+              document.body.appendChild(element);
+          
+              element.click();
+          
+              document.body.removeChild(element);
+          }
+          
+          // Start file download.
+          document.getElementById("dwn-btn").addEventListener("click", function(){
+              // Generate download of hello.txt file with some content
+              var text = "And blood-black nothingness began to spin... A system of cells interlinked within cells interlinked within cells interlinked within one stem... And dreadfully distinct against the dark, a tall white fountain played.";
+              //document.getElementById("text-val").value;
+              var filename = "genes-down.txt";
+              // newline sep the data 
+              var genes_down = {{ genes_down|tojson }};
+              var newsep = genes_down.join("\n");
+              // var up_array = commasep.split('\n');
+              // for csv data 
+              // var CSV = 'sep=,' + '\r\n\n';
+  
+              download(filename, newsep);
+          }, false);
+        </script>
     <div>
       {{ div_holder }}
     </div>
+    <div id="DownCloud"></div>
     
   </body>
 </html>
