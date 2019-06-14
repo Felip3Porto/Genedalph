@@ -74,12 +74,12 @@ def gProfilerTest():
     conn = mysql.connect()
     cursor = conn.cursor()
     try: 
-        cursor.execute("SELECT DISTINCT e.ENSG_id FROM DEG_lncRNA_roster d, Expression e WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id AND d.lncRNA_name = 'MANCR' AND e.log2FoldChange < 0;") 
+        cursor.execute("SELECT DISTINCT e.gene_symbol FROM DEG_lncRNA_roster d, Expression e WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id AND d.lncRNA_name = 'MANCR' AND e.log2FoldChange < 0 AND e.padj < .01;") 
         genes_down = cursor.fetchall()
         query_down=[i[0] for i in genes_down]
         # seems like genes_down etc are very large even on the API side to handle
         # makina a stringent separate query can get the most graph possible 
-        cursor.execute("SELECT DISTINCT e.gene_symbol FROM DEG_lncRNA_roster d, Expression e WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id AND d.lncRNA_name = 'MANCR' AND e.log2FoldChange > 0;") 
+        cursor.execute("SELECT DISTINCT e.gene_symbol FROM DEG_lncRNA_roster d, Expression e WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id AND d.lncRNA_name = 'MANCR' AND e.log2FoldChange > 0 AND e.padj < .00000001;") 
         genes_up = cursor.fetchall()
         # needs to be done before the cursor close
         # cursor object is not like a list at all 
@@ -87,16 +87,16 @@ def gProfilerTest():
         
     finally: 
         cursor.close()
-    print(query_down)
-    print(type(query_down))
-    print(len(query_down))
+    print(query_up)
+    print(type(query_up))
+    print(len(query_up))
     #query the upregulated and downregulated genes 
     sources = ["GO:MF","GO:CC","GO:BP","KEGG","REAC","WP"]
     # tricky cursor needs to be put in a python list 
 
     # GET dataframes of pathways 
     
-    # GOSTup = gp.profile(organism='hsapiens', query = query_up, sources = sources, no_evidences=False) 
+    GOSTup = gp.profile(organism='hsapiens', query = query_up, sources = sources, no_evidences=False) 
     # GOSTdown = gp.profile(organism='hsapiens', query = query_down, sources = sources, no_evidences=False) 
     # get lists for plotting 
     # 3 things GOids, -log(adjP), and terms
