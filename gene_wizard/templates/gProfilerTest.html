@@ -55,27 +55,13 @@
       // console.log('https://biit.cs.ut.ee/gprofiler/gost/?organism=hsapiens&all_results=false&ordered=false&no_iea=false&measure_underrepresentation=false&significance_threshold_method=bonferroni&domain_scope=annotated&sources=GO%3AMF%2CGO%3ACC%2CGO%3ABP%2CKEGG%2CREAC%2CWP&no_evidences=true&user_threshold=1e-8');
       console.log(urlQuery);
 
-      function visitPage(){
-        if( urlQuery == "null"){
-          window.location.href = "https://biit.cs.ut.ee/gprofiler/gost/?organism=hsapiens&all_results=false&ordered=false&no_iea=false&measure_underrepresentation=false&significance_threshold_method=bonferroni&domain_scope=annotated&sources=GO%3AMF%2CGO%3ACC%2CGO%3ABP%2CKEGG%2CREAC%2CWP&no_evidences=true&user_threshold=1e-8";
-        } else{
-          window.location.href = urlQuery;
-        }
-      }
-
-    // // after designating a call back it does not display
-    // // no error messaages here either so maybe this needs to include a different callback
-
-    // renderable = gOST.query({
-    //     query   : ["CASQ2", "CASQ1", "GSTO1", "DMD", "GSTM2"],
-    //     organism: "hsapiens",
-    //     srcFilter: ["GO:MF","GO:CC","GO:BP","KEGG","REAC","WP"],
-    //     correctionMethod: "bonferroni", 
-    //     userThreshold: 1e-8
-    // }, gOST.getRootURL// callback function
-    // );
-
-    // gp.render(renderable);
+      //function visitPage(){
+      //  if( urlQuery == "null"){
+      //    window.location.href = "https://biit.cs.ut.ee/gprofiler/gost/?organism=hsapiens&all_results=false&ordered=false&no_iea=false&measure_underrepresentation=false&significance_threshold_method=bonferroni&domain_scope=annotated&sources=GO%3AMF%2CGO%3ACC%2CGO%3ABP%2CKEGG%2CREAC%2CWP&no_evidences=true&user_threshold=1e-8";
+      //  } else{
+      //    window.location.href = urlQuery;
+      //  }
+      //}
 
     });
 
@@ -108,9 +94,13 @@
             // Generate download of hello.txt file with some content
             var text = "And blood-black nothingness began to spin... A system of cells interlinked within cells interlinked within cells interlinked within one stem... And dreadfully distinct against the dark, a tall white fountain played.";
             //document.getElementById("text-val").value;
-            var filename = "hello.txt";
-            
-            download(filename, text);
+            var filename = "genes-up.txt";
+            // newline sep the data 
+            var genes_up = {{ genes_up|tojson }};
+            var newsep = genes_up.join("\n");
+            // var up_array = commasep.split('\n');
+
+            download(filename, newsep);
         }, false);
       </script>
     </div>
