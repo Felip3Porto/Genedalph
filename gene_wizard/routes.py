@@ -74,48 +74,114 @@ def gProfilerTest():
     conn = mysql.connect()
     cursor = conn.cursor()
     try: 
-        cursor.execute("SELECT DISTINCT e.gene_symbol FROM DEG_lncRNA_roster d, Expression e WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id AND d.lncRNA_name = 'MANCR' AND e.log2FoldChange < 0 AND e.padj < .01;") 
+        # cloud genes down 
+        cursor.execute("SELECT DISTINCT e.gene_symbol FROM DEG_lncRNA_roster d, Expression e WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id AND d.lncRNA_name = 'MANCR' AND e.log2FoldChange < 0;") 
         genes_down = cursor.fetchall()
-        query_down=[i[0] for i in genes_down]
+        # query genes down regulated 
+        cursor.execute("SELECT DISTINCT e.gene_symbol FROM DEG_lncRNA_roster d, Expression e WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id AND d.lncRNA_name = 'MANCR' AND e.log2FoldChange < 0 AND e.padj < .0000001;") 
+        GOSTgenes_down = cursor.fetchall()
+        query_down = [i[0] for i in GOSTgenes_down]
         # seems like genes_down etc are very large even on the API side to handle
         # makina a stringent separate query can get the most graph possible 
-        cursor.execute("SELECT DISTINCT e.gene_symbol FROM DEG_lncRNA_roster d, Expression e WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id AND d.lncRNA_name = 'MANCR' AND e.log2FoldChange > 0 AND e.padj < .00000001;") 
+        
+        # cloud genes up regulated 
+        cursor.execute("SELECT DISTINCT e.gene_symbol FROM DEG_lncRNA_roster d, Expression e WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id AND d.lncRNA_name = 'MANCR' AND e.log2FoldChange > 0;") 
         genes_up = cursor.fetchall()
+        # query genes up regulated 
+        cursor.execute("SELECT DISTINCT e.gene_symbol FROM DEG_lncRNA_roster d, Expression e WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id AND d.lncRNA_name = 'MANCR' AND e.log2FoldChange > 0 AND e.padj < .0000001;") 
+        GOSTgenes_up = cursor.fetchall()
         # needs to be done before the cursor close
         # cursor object is not like a list at all 
-        query_up=[i[0] for i in genes_up]
+        query_up=[i[0] for i in GOSTgenes_up]
         
     finally: 
         cursor.close()
-    print(query_up)
-    print(type(query_up))
+    
     print(len(query_up))
     #query the upregulated and downregulated genes 
     sources = ["GO:MF","GO:CC","GO:BP","KEGG","REAC","WP"]
     # tricky cursor needs to be put in a python list 
 
+    # even after a stringent filters we are capped at 80   
+    if len(query_down) > 70:
+        query_down = query_down[:70]
+    if len(query_up) > 70:
+        query_up = query_up[:70]
+
     # GET dataframes of pathways 
-    
-    GOSTup = gp.profile(organism='hsapiens', query = query_up, sources = sources, no_evidences=False) 
-    # GOSTdown = gp.profile(organism='hsapiens', query = query_down, sources = sources, no_evidences=False) 
+    GOSTup = gp.profile(organism='hsapiens', query = query_up, sources = sources, no_evidences=False, user_threshold = .3) 
+    GOSTdown = gp.profile(organism='hsapiens', query = query_down, sources = sources, no_evidences=False, user_threshold = .3) 
     # get lists for plotting 
     # 3 things GOids, -log(adjP), and terms
-    # xGOtermsUp = GOSTup.native.to_list()
-    # # remember that pval is already corrected and the bar is -log(padj)
-    # listPadjUp = GOSTup.p_value.to_list()
-    # yPadjUp = []
-    # for e in listPadjUp:
-    #     yPadjUp.append(-math.log(e))
-    # GOtextUp = GOSTup.name.to_list()
-    # xGOtermsDown = GOSTdown.native.to_list()
-    # listPadjDown = GOSTdown.p_value.to_list()
-    # yPadjDown = []
-    # for i in listPadjDown:
-    #     yPadjDown.append(-math.log(i))
-    # GOtextDown = GOSTdown.name.to_list()
-        
+    xGOtermsUp = GOSTup.native.to_list()
+    # remember that pval is already corrected and the bar is -log(padj)
+    listPadjUp = GOSTup.p_value.to_list()
+    yPadjUp = []
+    for e in listPadjUp:
+        yPadjUp.append(-math.log(e))
+    GOtextUp = GOSTup.name.to_list()
+    xGOtermsDown = GOSTdown.native.to_list()
+    listPadjDown = GOSTdown.p_value.to_list()
+    yPadjDown = []
+    for i in listPadjDown:
+        yPadjDown.append(-math.log(i))
+    GOtextDown = GOSTdown.name.to_list()
+
+    ## plotly time 
+    traceUp = go.Bar(
+        x=xGOtermsUp,
+        y=yPadjUp,
+        text=GOtextUp,
+        marker=dict(color='rgb(158,202,225)',
+        line=dict(
+            color='rgb(8,48,107)',
+            width=1.5,)
+            ),
+            opacity=0.6
+        )
+    # keep the meat in trace 0 
+    dataUp = [traceUp]
+    # add the title
+    layoutUp = go.Layout(
+        title='Gene up regulated funtions',
+        yaxis=dict(title = '-log(adjusted p-value)')
+        )
+    # output_type='div' 
+    figUp = go.Figure(data=dataUp, layout=layoutUp)
+    div_Up = plot(figUp, output_type='div', filename='up_regulated_bars')
+
+    traceDown = go.Bar(
+        x=xGOtermsDown,
+        y=yPadjDown,
+        text=GOtextDown,
+        marker=dict(color='rgb(214,39,40)',
+        line=dict(
+            color='rgb(247,182,210)',
+            width=1.5,)
+            ),
+            opacity=0.6
+        )
+    # keep the meat in trace 0 
+    dataDown = [traceDown]
+    # add the title
+    layoutDown = go.Layout(
+        title='Gene rDown egulated funtions',
+        yaxis=dict(title = '-log(adjusted p-value)')
+        )
+    # try to unify 
+    data = [traceUp, traceDown]
+    layout= go.Layout(
+        title='Gene rDown egulated funtions',
+        yaxis=dict(title = '-log(adjusted p-value)')
+        )
+    fig = go.Figure(data=data, layout=layout)
+    div_holder = plot(fig, output_type='div',  filename='straight_bars') 
+
+    # output_type='div' 
+    figDown = go.Figure(data=dataDown, layout=layoutDown)
+    div_Down = plot(figDown, output_type='div',  filename='down_regulated_bars')     
     # since it is a dict cursor try sending the df as a dict or json
-    return render_template('gProfilerTest.html', genes_down=genes_down, genes_up=genes_up) #, jsonify(result={"status": 200})
+    return render_template('gProfilerTest.html', genes_down=genes_down, genes_up=genes_up, div_holder=Markup(div_holder)) #, jsonify(result={"status": 200})
 
 @app.route('/test')
 def test():
