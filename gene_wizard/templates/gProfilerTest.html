@@ -19,25 +19,16 @@
           // console.log(genes_up[0]);
         });
         
-        // array like my data I pass
-        function json2array(json){
-          var result = [];
-          var keys = Object.keys(json);
-          keys.forEach(function(key){
-            result.push(json[key]);
-          });
-          return result;
-        }
         // flatten the data 
         var genes_up = {{ genes_up|tojson }};
         // var dato = genes_up[0]; just gets one
         var commasep = genes_up.join(",");
         // console.log(commasep);
+        // THIS is the one that works 
         var up_array = commasep.split(',');
+
         var str_result = '\[\"' + commasep.split(',').join('\",\"') + '\"\]';
         // console.log(up_array);
-        var gene_up_list = json2array(genes_up); 
-        
         
         // var serialized_up = JSON.stringify(gene_up_list);
 
@@ -61,12 +52,16 @@
         correctionMethod: "bonferroni", 
         userThreshold: 1e-8
       });
-      console.log('https://biit.cs.ut.ee/gprofiler/gost/?organism=hsapiens&all_results=false&ordered=false&no_iea=false&measure_underrepresentation=false&significance_threshold_method=bonferroni&domain_scope=annotated&sources=GO%3AMF%2CGO%3ACC%2CGO%3ABP%2CKEGG%2CREAC%2CWP&no_evidences=true&user_threshold=1e-8&');
+      // console.log('https://biit.cs.ut.ee/gprofiler/gost/?organism=hsapiens&all_results=false&ordered=false&no_iea=false&measure_underrepresentation=false&significance_threshold_method=bonferroni&domain_scope=annotated&sources=GO%3AMF%2CGO%3ACC%2CGO%3ABP%2CKEGG%2CREAC%2CWP&no_evidences=true&user_threshold=1e-8');
       console.log(urlQuery);
-      function visitPage(){
-        window.location=urlQuery;
-      }
 
+      function visitPage(){
+        if( urlQuery == "null"){
+          window.location.href = "https://biit.cs.ut.ee/gprofiler/gost/?organism=hsapiens&all_results=false&ordered=false&no_iea=false&measure_underrepresentation=false&significance_threshold_method=bonferroni&domain_scope=annotated&sources=GO%3AMF%2CGO%3ACC%2CGO%3ABP%2CKEGG%2CREAC%2CWP&no_evidences=true&user_threshold=1e-8";
+        } else{
+          window.location.href = urlQuery;
+        }
+      }
 
     // // after designating a call back it does not display
     // // no error messaages here either so maybe this needs to include a different callback
@@ -85,12 +80,39 @@
     });
 
     </script>
-    <button onclick="visitPage();">Visit Page Now</button>
   </head>
   <body>
     
     <p>Here is an example using g:Profilers word cloud api</p>
      
-    <div id="myContainer"></div>
+    <div id="myContainer">
+      <!-- add a button to download a line separated list -->
+      <button target="_blank" onclick="window.open('https://biit.cs.ut.ee/gprofiler/gost/?organism=hsapiens&all_results=false&ordered=false&no_iea=false&measure_underrepresentation=false&significance_threshold_method=bonferroni&domain_scope=annotated&sources=GO%3AMF%2CGO%3ACC%2CGO%3ABP%2CKEGG%2CREAC%2CWP&no_evidences=true&user_threshold=1e-8');">Visit Gprofiler for extensive reults for queried genes</button>
+      <input type="button" id="dwn-btn" value="Download query list of up regulated genes"/>
+      <script>
+          function download(filename, text) {
+            var element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+            element.setAttribute('download', filename);
+        
+            element.style.display = 'none';
+            document.body.appendChild(element);
+        
+            element.click();
+        
+            document.body.removeChild(element);
+        }
+        
+        // Start file download.
+        document.getElementById("dwn-btn").addEventListener("click", function(){
+            // Generate download of hello.txt file with some content
+            var text = "And blood-black nothingness began to spin... A system of cells interlinked within cells interlinked within cells interlinked within one stem... And dreadfully distinct against the dark, a tall white fountain played.";
+            //document.getElementById("text-val").value;
+            var filename = "hello.txt";
+            
+            download(filename, text);
+        }, false);
+      </script>
+    </div>
   </body>
 </html>
