@@ -42,8 +42,7 @@
       });
       
       gOST = gp.getGProfiler({});
-    
-
+  
     // unfortunately this makes too big of a url 
     var urlQuery = gOST.getQueryURL({
         query   : up_array,
@@ -68,6 +67,9 @@
     </script>
   </head>
   <body>
+    <!-- <div>
+      {{ div_Up }}
+    </div> -->
     
     <p>Here is an example using g:Profilers word cloud api</p>
      
@@ -99,10 +101,16 @@
             var genes_up = {{ genes_up|tojson }};
             var newsep = genes_up.join("\n");
             // var up_array = commasep.split('\n');
+            // for csv data 
+            // var CSV = 'sep=,' + '\r\n\n';
 
             download(filename, newsep);
         }, false);
       </script>
     </div>
+    <div>
+      {{ div_holder }}
+    </div>
+    
   </body>
 </html>
