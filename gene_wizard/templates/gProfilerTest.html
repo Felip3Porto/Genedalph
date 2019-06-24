@@ -1,7 +1,13 @@
+<!DOCTYPE html>
 <html>
 
   <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  
     <title> Gprofiler Javascript test</title>
     <!-- located in the "static" file -->
     <script src="static/biojs-vis-gprofiler/build/biojsvisgprofiler.min.js"></script>
@@ -9,9 +15,9 @@
 
     document.addEventListener("DOMContentLoaded", function(e) {
         gp = new biojsVisGprofiler({
-          container : "#myContainer",
-          width     : 600,
-          height    : 600,
+          container : "#UpCloud",
+          width     : 500,
+          height    : 300,
         });
       
         gp.on("onrender", function() {
@@ -68,8 +74,8 @@
         document.addEventListener("DOMContentLoaded", function(e) {
           gp = new biojsVisGprofiler({
             container : "#DownCloud",
-            width     : 600,
-            height    : 600,
+            width     : 500,
+            height    : 300,
           });
         
           gp.on("onrender", function() {
@@ -115,49 +121,67 @@
       });
     </script>
   </head>
+
+  <!-- Start of Body -->
   <body>
     <!-- <div>
       {{ div_Up }}
     </div> -->
     
     <p>Here is an example using g:Profilers word cloud api</p>
-     
-    <div id="myContainer">
-      <!-- add a button to download a line separated list -->
-      <button target="_blank" onclick="window.open('https://biit.cs.ut.ee/gprofiler/gost/?organism=hsapiens&all_results=false&ordered=false&no_iea=false&measure_underrepresentation=false&significance_threshold_method=bonferroni&domain_scope=annotated&sources=GO%3AMF%2CGO%3ACC%2CGO%3ABP%2CKEGG%2CREAC%2CWP&no_evidences=true&user_threshold=1e-8');">Visit Gprofiler for extensive reults for queried genes</button>
-      <input type="button" id="up-btn" value="Download query list of up regulated genes"/>
-      <script>
-          function download(filename, text) {
-            var element = document.createElement('a');
-            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-            element.setAttribute('download', filename);
-        
-            element.style.display = 'none';
-            document.body.appendChild(element);
-        
-            element.click();
-        
-            document.body.removeChild(element);
-        }
-        
-        // Start file download.
-        document.getElementById("up-btn").addEventListener("click", function(){
-            // Generate download of hello.txt file with some content
-            var text = "And blood-black nothingness began to spin... A system of cells interlinked within cells interlinked within cells interlinked within one stem... And dreadfully distinct against the dark, a tall white fountain played.";
-            //document.getElementById("text-val").value;
-            var filename = "genes-up.txt";
-            // newline sep the data 
-            var genes_up = {{ genes_up|tojson }};
-            var newsep = genes_up.join("\n");
-            // var up_array = commasep.split('\n');
-            // for csv data 
-            // var CSV = 'sep=,' + '\r\n\n';
 
-            download(filename, newsep);
-        }, false);
-      </script>
+    <!-- Try to make them side by side  -->
+    <div class="container">
+      <div class="row">
+        <!-- lets have the up on the left and down on the right -->
+          <div class="col-xs-6">
+            <h3>Word cloud of up regulated functions</h3>
+              <div id="UpCloud"></div>
+          </div>
+          <div class="col-xs-6">
+              <h3>Word cloud of down regulated functions</h3>
+              <div id="DownCloud"></div>
+            </div>
+        </div>
     </div>
-    <input type="button" id="dwn-btn" value="Download query list of down regulated genes"/>
+
+    <!-- Buttons for downloads -->
+    <div class="btn-group" role="group" aria-label="Buttons for downloading queries">
+      <!-- add a button to download a line separated list -->
+      <!-- <button type="button" class="btn btn-secondary">1</button> -->
+        <button target="_blank" type="button" class="btn btn-secondary" onclick="window.open('https://biit.cs.ut.ee/gprofiler/gost/?organism=hsapiens&all_results=false&ordered=false&no_iea=false&measure_underrepresentation=false&significance_threshold_method=bonferroni&domain_scope=annotated&sources=GO%3AMF%2CGO%3ACC%2CGO%3ABP%2CKEGG%2CREAC%2CWP&no_evidences=true&user_threshold=1e-8');">Visit Gprofiler for extensive reults for queried genes</button>
+        <input type="button" id="up-btn" class="btn btn-secondary" value="Download query list of up regulated genes"/>
+        <script>
+            function download(filename, text) {
+              var element = document.createElement('a');
+              element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+              element.setAttribute('download', filename);
+          
+              element.style.display = 'none';
+              document.body.appendChild(element);
+          
+              element.click();
+          
+              document.body.removeChild(element);
+          }
+          
+          // Start file download.
+          document.getElementById("up-btn").addEventListener("click", function(){
+              // Generate download of hello.txt file with some content
+              var text = "And blood-black nothingness began to spin... A system of cells interlinked within cells interlinked within cells interlinked within one stem... And dreadfully distinct against the dark, a tall white fountain played.";
+              //document.getElementById("text-val").value;
+              var filename = "genes-up.txt";
+              // newline sep the data 
+              var genes_up = {{ genes_up|tojson }};
+              var newsep = genes_up.join("\n");
+              // var up_array = commasep.split('\n');
+              // for csv data 
+              // var CSV = 'sep=,' + '\r\n\n';
+  
+              download(filename, newsep);
+          }, false);
+        </script>
+        <input type="button" id="dwn-btn" class="btn btn-secondary" value="Download query list of down regulated genes"/>
         <script>
             function download(filename, text) {
               var element = document.createElement('a');
@@ -188,10 +212,22 @@
               download(filename, newsep);
           }, false);
         </script>
+    </div>
+
+    
+  
+        <!-- div_holder is JS graph from plotly -->
     <div>
       {{ div_holder }}
     </div>
-    <div id="DownCloud"></div>
     
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   </body>
 </html>
