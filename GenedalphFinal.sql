@@ -26,14 +26,14 @@ CREATE TABLE `DEG_lncRNA_roster` (
 DROP TABLE IF EXISTS `Expression`;
 CREATE TABLE `Expression` (
   `expression_id` int(11) NOT NULL,
-  `ENSG_id` varchar(45) DEFAULT NULL,
+  `ENSG_id` varchar(200) DEFAULT NULL,
   `gene_symbol` varchar(69) DEFAULT NULL,
   `baseMean` decimal(45,25) DEFAULT NULL,
   `log2FoldChange` decimal(45,25) DEFAULT NULL,
   `lfcSE` decimal(45,25) DEFAULT NULL,
-  `pvalue` decimal(45,25) DEFAULT NULL,
+  `pvalue` decimal(45,38) DEFAULT NULL,
   `stat` decimal(45,25) DEFAULT NULL,
-  `padj` decimal(45,25) DEFAULT NULL,
+  `padj` decimal(45,38) DEFAULT NULL,
   `DEG_lncRNA_roster_roster_id` int(11) NOT NULL,
   PRIMARY KEY (`expression_id`),
   KEY `fk_Expression_DEG_lncRNA_roster_idx` (`DEG_lncRNA_roster_roster_id`),
