@@ -8,7 +8,7 @@ app = Flask(__name__)
 static_url_path='/Data'
 app.config['MYSQL_DATABASE_USER'] = 'root'
 app.config['MYSQL_DATABASE_PASSWORD'] = 'cello1996'
-app.config['MYSQL_DATABASE_DB'] = 'Genedalfv2'
+app.config['MYSQL_DATABASE_DB'] = 'GenedalphFinal'
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 mysql.init_app(app)
