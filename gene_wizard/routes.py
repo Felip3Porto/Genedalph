@@ -35,14 +35,10 @@ def home():
         # cursor.execute("FROM Expression e, DEG_lncRNA_roster d")
         # cursor.execute("WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id and d.lncRNA_name = " + lncRNA_name + ";")
         try: 
-            cursor.execute("SELECT e.ENSG_id, e.gene_symbol, e.baseMean, e.log2FoldChange, e.lfcSE, e.pvalue, e.stat, e.padj FROM Expression e, DEG_lncRNA_roster d WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id and d.lncRNA_name = '" + lncRNA_name + "';")
+            # expression data 
+            cursor.execute("SELECT e.ENSG_id, e.gene_symbol, ROUND(e.baseMean, 3), ROUND(e.log2FoldChange, 3), ROUND(e.lfcSE, 3), ROUND(e.pvalue, 3) , ROUND(e.stat, 3), ROUND(e.padj, 3) FROM Expression e, DEG_lncRNA_roster d WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id and d.lncRNA_name = '" + lncRNA_name + "';")
             expression_data = cursor.fetchall()
-            #2
-            cursor.execute("SELECT DISTINCT g.path_to_plot  FROM Expression e, DEG_lncRNA_roster d, PreRanking p, GSEA_reports g WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id  AND d.lncRNA_name = '"+ lncRNA_name +"'  AND e.DEG_lncRNA_roster_roster_id = p.Expression_expression_id  AND p.prerank_id = g.PreRanking_prerank_id AND g.path_to_plot IS NOT NULL AND g.path_to_plot LIKE '%_up_%' AND g.path_to_plot NOT LIKE '%_down_%' ORDER BY g.fdr ASC;") 
-            graphs_up_reg = cursor.fetchall()
-            #3 
-            cursor.execute("SELECT DISTINCT g.path_to_plot  FROM Expression e, DEG_lncRNA_roster d, PreRanking p, GSEA_reports g WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id  AND d.lncRNA_name = '"+ lncRNA_name +"'  AND e.DEG_lncRNA_roster_roster_id = p.Expression_expression_id  AND p.prerank_id = g.PreRanking_prerank_id AND g.path_to_plot IS NOT NULL AND g.path_to_plot LIKE '%_down_%' AND g.path_to_plot NOT LIKE '%_up_%' ORDER BY g.fdr ASC;") 
-            graphs_down_reg = cursor.fetchall()
+           
         finally:
             cursor.close()
         # cursor.execute("SELECT * FROM DEG_lncRNA_roster WHERE lncRNA_name='" + lncRNA_name + "'")
@@ -53,7 +49,7 @@ def home():
         if data is None:
             return "That lncRNA is not available in genedalf"
         else:
-            return render_template('test.html', expression_data=expression_data, graphs_up_reg=graphs_up_reg, graphs_down_reg=graphs_down_reg, lncRNA_name=lncRNA_name)
+            return render_template('test.html', expression_data=expression_data, lncRNA_name=lncRNA_name)
             # return redirect('/results', expression_data=expression_data, graphs_up_reg=graphs_up_reg, graphs_down_reg=graphs_down_reg)
             # returning just data is not possible 
             # send to appropriate routes  
@@ -157,7 +153,7 @@ def gProfilerTest():
     # try to unify 
     data = [traceUp, traceDown]
     layout= go.Layout(
-        title='Gene rDown egulated funtions',
+        title='Significant Differentially Expressed functions after a lncRNA knockdown',
         yaxis=dict(title = '-log(adjusted p-value)')
         )
     fig = go.Figure(data=data, layout=layout)
