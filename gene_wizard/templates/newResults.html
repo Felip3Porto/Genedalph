@@ -34,24 +34,17 @@
         
         // flatten the data 
         var genes_up = {{ genes_up|tojson }};
-        // var dato = genes_up[0]; just gets one
         var commasep = genes_up.join(",");
-        // console.log(commasep);
-        // THIS is the one that works 
         var up_array = commasep.split(',');
 
         var str_result = '\[\"' + commasep.split(',').join('\",\"') + '\"\]';
-        // console.log(up_array);
-        
-        // var serialized_up = JSON.stringify(gene_up_list);
 
         gp.render({
-        // query   : gene_up_list,
         query : up_array, 
         organism: "hsapiens",
         srcFilter: ["GO:MF","GO:CC","GO:BP","KEGG","REAC","WP"],
         correctionMethod: "bonferroni", 
-        userThreshold: 1e-8
+        userThreshold: .01
       });
       
       gOST = gp.getGProfiler({});
@@ -62,9 +55,8 @@
         organism: "hsapiens",
         srcFilter: ["GO:MF","GO:CC","GO:BP","KEGG","REAC","WP"],
         correctionMethod: "bonferroni", 
-        userThreshold: 1e-8
+        userThreshold: .01
       });
-      // console.log('https://biit.cs.ut.ee/gprofiler/gost/?organism=hsapiens&all_results=false&ordered=false&no_iea=false&measure_underrepresentation=false&significance_threshold_method=bonferroni&domain_scope=annotated&sources=GO%3AMF%2CGO%3ACC%2CGO%3ABP%2CKEGG%2CREAC%2CWP&no_evidences=true&user_threshold=1e-8');
       console.log(urlQuery);
 
     });
@@ -84,10 +76,7 @@
           
           // flatten the data 
           var genes_down = {{ genes_down|tojson }};
-          // var dato = genes_up[0]; just gets one
           var commasep = genes_down.join(",");
-          // console.log(commasep);
-          // THIS is the one that works 
           var down_array = commasep.split(',');
   
           var str_result = '\[\"' + commasep.split(',').join('\",\"') + '\"\]';
@@ -101,7 +90,7 @@
           organism: "hsapiens",
           srcFilter: ["GO:MF","GO:CC","GO:BP","KEGG","REAC","WP"],
           correctionMethod: "bonferroni", 
-          userThreshold: 1e-8
+          userThreshold: .01
         });
         
         gOST = gp.getGProfiler({});
@@ -112,9 +101,8 @@
           organism: "hsapiens",
           srcFilter: ["GO:MF","GO:CC","GO:BP","KEGG","REAC","WP"],
           correctionMethod: "bonferroni", 
-          userThreshold: 1e-8
+          userThreshold: .01
         });
-        // console.log('https://biit.cs.ut.ee/gprofiler/gost/?organism=hsapiens&all_results=false&ordered=false&no_iea=false&measure_underrepresentation=false&significance_threshold_method=bonferroni&domain_scope=annotated&sources=GO%3AMF%2CGO%3ACC%2CGO%3ABP%2CKEGG%2CREAC%2CWP&no_evidences=true&user_threshold=1e-8');
         console.log(urlQuery);
   
       });
@@ -138,7 +126,7 @@
           </li>
         </ul>
         <form class="form-inline my-2 my-lg-0" method= "POST">
-            <input class="form-control mr-sm-2" type="text" placeholder="Search" name="lncRNA_name" aria-label="Search">
+            <input class="form-control mr-sm-2" type="text" placeholder="a lncRNA name" name="lncRNA_name" aria-label="Search">
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
         </form>
       </div>
@@ -176,7 +164,7 @@
               <!-- <td>{{expression_data['Name']}}</td> -->
               {% for row in expression_data %}
               <td> {{row[0]}} </td>
-              <td> {{row[1]}} </td>
+              <td>   {{row[1]}} </td>
               <td> {{row[2]}} </td>
               <td> {{row[3]}} </td>
               <td> {{row[4]}} </td>
@@ -230,8 +218,7 @@
                     // Generate download of hello.txt file with some content
                     var text = "And blood-black nothingness began to spin... A system of cells interlinked within cells interlinked within cells interlinked within one stem... And dreadfully distinct against the dark, a tall white fountain played.";
                     //document.getElementById("text-val").value;
-                    var filename = "genes-up.txt";
-                    // newline sep the data 
+                    var filename = "{{lncRNA_name}}" +"-genes-up.txt";
                     var genes_up = {{ genes_up|tojson }};
                     var newsep = genes_up.join("\n");
                    
@@ -255,10 +242,8 @@
                 
                 // Start file download.
                 document.getElementById("dwn-btn").addEventListener("click", function(){
-                    // Generate download of hello.txt file with some content
-                    var text = "And blood-black nothingness began to spin... A system of cells interlinked within cells interlinked within cells interlinked within one stem... And dreadfully distinct against the dark, a tall white fountain played.";
-                    //document.getElementById("text-val").value;
-                    var filename = "genes-down.txt";
+                    
+                    var filename = "{{lncRNA_name}}" +"-genes-down.txt";
                     // newline sep the data 
                     var genes_down = {{ genes_down|tojson }};
                     var newsep = genes_down.join("\n");
@@ -270,7 +255,7 @@
       
           
         
-              <!-- div_holder is JS graph from plotly -->
+        <!-- div_holder is JS graph from plotly -->
           <div id="plotly-graph">
             {{ div_holder }}
           </div>

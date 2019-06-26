@@ -25,7 +25,10 @@ def home():
         #Fetch form data 
         DEG_lncRNA_roster = request.form 
         lncRNA_name = DEG_lncRNA_roster['lncRNA_name']
+        # strip things to prevents SQL injection 
         lncRNA_name = lncRNA_name.replace(';','')
+        lncRNA_name = lncRNA_name.replace('=','')
+        lncRNA_name = lncRNA_name.replace('"','')
 
         # cell_line = DEG_lncRNA_roster['cell_line']
 
@@ -43,7 +46,7 @@ def home():
             cursor.execute("SELECT DISTINCT e.gene_symbol FROM DEG_lncRNA_roster d, Expression e WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id AND d.lncRNA_name = '" + lncRNA_name + "' AND e.log2FoldChange < 0;") 
             genes_down = cursor.fetchall()
             # query genes down regulated 
-            cursor.execute("SELECT DISTINCT e.gene_symbol FROM DEG_lncRNA_roster d, Expression e WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id AND d.lncRNA_name = '" + lncRNA_name + "' AND e.log2FoldChange < 0 AND e.padj < .0000001;") 
+            cursor.execute("SELECT DISTINCT e.gene_symbol FROM DEG_lncRNA_roster d, Expression e WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id AND d.lncRNA_name = '" + lncRNA_name + "' AND e.log2FoldChange < 0 AND e.padj < .0001;") 
             GOSTgenes_down = cursor.fetchall()
             query_down = [i[0] for i in GOSTgenes_down]
             # seems like genes_down etc are very large even on the API side to handle
@@ -53,7 +56,7 @@ def home():
             cursor.execute("SELECT DISTINCT e.gene_symbol FROM DEG_lncRNA_roster d, Expression e WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id AND d.lncRNA_name = '" + lncRNA_name + "' AND e.log2FoldChange > 0;") 
             genes_up = cursor.fetchall()
             # query genes up regulated 
-            cursor.execute("SELECT DISTINCT e.gene_symbol FROM DEG_lncRNA_roster d, Expression e WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id AND d.lncRNA_name = '" + lncRNA_name + "' AND e.log2FoldChange > 0 AND e.padj < .0000001;") 
+            cursor.execute("SELECT DISTINCT e.gene_symbol FROM DEG_lncRNA_roster d, Expression e WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id AND d.lncRNA_name = '" + lncRNA_name + "' AND e.log2FoldChange > 0 AND e.padj < .0001;") 
             GOSTgenes_up = cursor.fetchall()
             # needs to be done before the cursor close
             # cursor object is not like a list at all 
@@ -98,7 +101,7 @@ def home():
                 yPadjDown.append(-math.log(i))
             GOtextDown = GOSTdown.name.to_list()
 
-            dynamic_title = "Significant Differentially Expressed functions after " + lncRNA_name + "'s knockdown"
+            dynamic_title = "Top Significant Differentially Expressed functions after " + lncRNA_name + "'s knockdown"
 
             ## plotly time 
             traceUp = go.Bar(
@@ -246,27 +249,6 @@ def gProfilerTest():
        
     # since it is a dict cursor try sending the df as a dict or json
     return render_template('gProfilerTest.html', genes_down=genes_down, genes_up=genes_up, div_holder=Markup(div_holder)) #, jsonify(result={"status": 200})
-
-@app.route('/test')
-def test():
-    conn = mysql.connect()
-    cursor =conn.cursor()
-   
-    try:
-        #1 
-        cursor.execute("SELECT e.ENSG_id, e.gene_symbol, e.baseMean, e.log2FoldChange, e.lfcSE, e.pvalue, e.stat, e.padj FROM Expression e, DEG_lncRNA_roster d WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id and d.lncRNA_name = 'MANCR';")
-        expression_data = cursor.fetchall()
-        #2
-        cursor.execute("SELECT DISTINCT g.path_to_plot  FROM Expression e, DEG_lncRNA_roster d, PreRanking p, GSEA_reports g WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id  AND d.lncRNA_name = 'MANCR'  AND e.DEG_lncRNA_roster_roster_id = p.Expression_expression_id  AND p.prerank_id = g.PreRanking_prerank_id AND g.path_to_plot IS NOT NULL AND g.path_to_plot LIKE '%_up_%' AND g.path_to_plot NOT LIKE '%_down_%' ORDER BY g.fdr DESC;") 
-        graphs_up_reg = cursor.fetchall()
-        #3 
-        cursor.execute("SELECT DISTINCT g.path_to_plot  FROM Expression e, DEG_lncRNA_roster d, PreRanking p, GSEA_reports g WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id  AND d.lncRNA_name = 'MANCR'  AND e.DEG_lncRNA_roster_roster_id = p.Expression_expression_id  AND p.prerank_id = g.PreRanking_prerank_id AND g.path_to_plot IS NOT NULL AND g.path_to_plot LIKE '%_down_%' AND g.path_to_plot NOT LIKE '%_up_%' ORDER BY g.fdr DESC;") 
-        graphs_down_reg = cursor.fetchall()
-    
-    finally: 
-        cursor.close()
-    image_name = url_for("Data/Reports/SENCR_up_report/positive regulation of transferase activity (GO_0051347).prerank.png")
-    return render_template('test.html', expression_data=expression_data, graphs_up_reg=graphs_up_reg, graphs_down_reg=graphs_down_reg, image_name=image_name)
 
 @app.route("/report/<filename>")
 def send_image(filename):
