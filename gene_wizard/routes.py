@@ -2,6 +2,7 @@
 # need to treat the rest of gene_wizard like a package 
 from flask import Flask, render_template, send_from_directory, send_file, url_for, flash, redirect, request, Markup, jsonify
 from gene_wizard import app, mysql
+import os 
 
 # use a custom agent of the Gprofiler API
 from gprofiler import GProfiler
@@ -182,6 +183,11 @@ def home():
 # def about():
 #     return render_template('about.html', title = 'About')
 
+
+@app.route('/favicon')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'wizard.ico', mimetype='image/vnd.microsoft.icon')
 
 @app.route("/report/<filename>")
 def send_image(filename):

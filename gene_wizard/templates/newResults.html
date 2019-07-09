@@ -2,6 +2,7 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <link rel="shortcut icon" href="{{ url_for('favicon') }}">
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -150,9 +151,9 @@
 
 <!-- BODY STARTS HERE ############################################################ -->
 <!-- 1) Table 2)clouds 3) button bar 4) Graph -->
-   <body>
+   <body style="margin:15;padding:15">
     
-      <h2><br/>Differential Gene Expression data after the knockdown of {{lncRNA_name}} in the {{cell_line}} cell line.</h2>
+      <h2><br/>Differential Gene Expression data after the knockdown of {{lncRNA_name}} in the {{cell_line}} cell line.<hr/></h2>
 <!-- safsdafs -->
       <div>
         <table id="table_id" class="display table-striped table-hover table-condensed">
@@ -204,6 +205,8 @@
           </div>
       
           <!-- Buttons for downloads -->
+          <div class="mx-auto">
+            <hr/>
           <div class="btn-group" style="align-content:center;" role="group" aria-label="Buttons for downloading queries">
             <!-- add a button to download a line separated list -->
             <!-- <button type="button" class="btn btn-secondary">1</button> -->
@@ -260,6 +263,8 @@
                 }, false);
               </script>
           </div>
+
+        </div>
       
           
         
