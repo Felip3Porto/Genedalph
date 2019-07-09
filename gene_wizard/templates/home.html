@@ -76,18 +76,15 @@ form.example::after {
           <a class="nav-link" href="#">About</a>
         </li>
       </ul>
-      <form class="form-inline my-2 my-lg-0" method= "POST">
-        <input class="form-control mr-sm-2" type="text" placeholder="Search" name="lncRNA_name" aria-label="Search">
-        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-      </form>
     </div>
   </nav>
 <body>
 <h1>
-  
+    <br>
 </h1>
 <h2>
-    <center>Search lncRNAs</center>
+    <center>Search for any lncRNA or human cell line you are interested in</center>
+    
 </h2>
 
 <!-- Autocomplete form -->
@@ -99,40 +96,51 @@ form.example::after {
 </div>
 
 <script type="text/javascript">
-$(function() {
-  $('#lncSep').autocomplete({
-    source:function(request, response) {
-      $.getJSON("{{ url_for('autocomplete') }}", {
-        autocomplete: request.term, 
-      }, function(data) {
-        response(data.json_list);
+  (function($) {
+    $('#lncSep').autocomplete({
+      source:function(request, response) {
+        $.getJSON("{{ url_for('autocomplete') }}", {
+            autocomplete: request.term, 
+          }, function(data) {
+            response(data.json_list);
+          });
+        }, 
+        minLength: 1, 
+        select: function(event, ui) {
+          console.log(ui.item.value);
+        }
       });
-    }, 
-    minLength: 1, 
-    select: function(event, ui) {
-      console.log(ui.item.value);
-    }
-  });
-});
+    }(jQuery))
 </script>
 
 
 <center>
   <div class="container">
-    <h4> Search for any of the lncRNA experiments currently available </h4>
-      <table class="table-striped table-hover table-condensed">
+    <h4><br> Here is a comprehensive list of experiments currently available on Genedalph <br></h4>
+      <table id="ledger" class="table-striped table-hover table-condensed">
+        <thead>
           <tr>
             <th> lncRNA  </th>
             <th> cell line </th>
           </tr>
+        </thead>
+        <tbody>
           {% for row in home_table %}
-        <tr>
-          <td> {{row[0]}} </td>
-          <td> {{row[1]}} </td>
-        </tr>
-        {% endfor %}         
+          <tr>
+            <td> {{row[0]}} </td>
+            <td> {{row[1]}} </td>
+          </tr>
+          {% endfor %}  
+        </tbody>  
        </table>
   </div>
+
+  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/v/bs4/jq-3.3.1/dt-1.10.18/datatables.min.js"></script>
+  <script>
+      $(document).ready( function () {
+          $('#ledger').DataTable();  
+      } );
+  </script>
     <pre>
         ,---.
         /    |

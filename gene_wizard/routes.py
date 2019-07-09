@@ -15,6 +15,17 @@ import plotly.graph_objs as go
 from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
 import pandas as pd
 
+# big list for lncRNA autocomplete 
+NAMES = ["DEANR1,H9","DNM3OS,SKOV3","Firre,Patski","FOXA2,H9","H19,HTR","HNF1A-AS1,EAC",
+"IGFL2-AS1,MCF10A-AT1","lincDUSP,V481","lincDUSP,V703","MANCR,MDA-MB-231","PANCR,H9-Cardiomyocyte",
+"SENCR,HCASMCs","AC016831.7,u87","CCAT1,hela","CTC-428G20.6,u87","CTC-428G20.6,hela","EPB41L4A-AS1,u87",
+"EPB41L4A-AS1,k562","KB-1471A8.1,hela","LAMTOR5-AS1,hela","LINC00263,u87","LINC00263,k562",
+"LINC00263,hela","LINC00680,u87","LINC00680,hela","LINC00909,u87","LINC00909,k562","MIR142,k562",
+"MIR17HG,hela","MIR210HG,u87","MIR29A,u87","PVT1,u87","PVT1,hela","RP11-1094M14.11,u87",
+"RP11-126L15.4,u87","RP11-734K2.4,u87","RP11-96L14.7,u87","RP11-973D8.4,u87","RP5-1148A21.3,hela",
+"SNHG1,u87","SNHG12,u87","TRAM2-AS1,u87","XLOC_010347,u87","XLOC_014806,u87","XLOC_015111,u87",
+"XLOC_026118,u87","XLOC_029037,u87","XLOC_040566,u87","XLOC_042889,k562","XLOC_051509,u87","XLOC_054068,u87"]
+
 #because they are in the package now ya gotta have the dot before your own created objects
 
 @app.route("/", methods=['GET', 'POST'])#root or homepage
@@ -94,12 +105,22 @@ def home():
 
             # GET dataframes of pathways 
             # getting assertion error if the query yeilds no results
-            GOSTup = gp.profile(organism='hsapiens', query = query_up, sources = sources, no_evidences=False, user_threshold = .5) 
-            GOSTdown = gp.profile(organism='hsapiens', query = query_down, sources = sources, no_evidences=False, user_threshold = .5) 
+            # try:
+            # except AssertionError:
+            #     pass
+            try:
+                GOSTup = gp.profile(organism='hsapiens', query = query_up, sources = sources, no_evidences=False, user_threshold = .5) 
+            except AssertionError:
+                pass 
+            try:
+                GOSTdown = gp.profile(organism='hsapiens', query = query_down, sources = sources, no_evidences=False, user_threshold = .5) 
+            except AssertionError:
+                pass
+            
             # get lists for plotting 
             # 3 things GOids, -log(adjP), and terms
-            xGOtermsUp = GOSTup.native.to_list()
             # remember that pval is already corrected and the bar is -log(padj)
+            xGOtermsUp = GOSTup.native.to_list()
             listPadjUp = GOSTup.p_value.to_list()
             yPadjUp = []
             for e in listPadjUp:
@@ -141,7 +162,7 @@ def home():
                 )
             # keep the meat in trace 0 
 
-            # try to unify 
+            # try to unify both graphs into 1 Figure 
             data = [traceUp, traceDown]
             layout= go.Layout(
                 title= dynamic_title,
@@ -267,13 +288,12 @@ def send_image(filename):
     return send_file(filename, mimetype='image/png')
     # return send_from_directory("Data" , filename)
 
-NAMES=["ruby","MIR29A","EPB41L4A-AS1","KB-1471A8.1", "RP11-973D8.4", "XLOC_029037","XLOC_014806","MIR17HG","XLOC_042889","XLOC_010347","RP11-734K2.4"]
-
 @app.route('/autocomplete',methods=['GET'])
 def autocomplete():
+    # fetch the query from the front end 
     search = request.args.get('autocomplete')
     app.logger.debug(search)
-    
+    #see if there is anything like the initial query in our list 
     query = [s for s in NAMES if str(search) in s]
     
     return jsonify(json_list=query) 

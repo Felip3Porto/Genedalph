@@ -12,8 +12,12 @@
 
     <!-- Custom CSS  -->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
-
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/jq-3.3.1/dt-1.10.18/datatables.min.css"/>
+
+    <!-- jquery which supports IE -->
+    <link href="https://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" rel="Stylesheet"></link>
+    <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.10.2/jquery-ui.js" ></script>
     
     <title>Genedalph Results</title>
 
@@ -42,23 +46,11 @@
         gp.render({
         query : up_array, 
         organism: "hsapiens",
-        srcFilter: ["GO:MF","GO:CC","GO:BP","KEGG","REAC","WP"],
+        srcFilter: ["GO:MF","GO:CC","GO:BP","KEGG","REAC","WP", "HP"],
         correctionMethod: "bonferroni", 
         userThreshold: .01
       });
       
-      gOST = gp.getGProfiler({});
-  
-    // unfortunately this makes too big of a url 
-    var urlQuery = gOST.getQueryURL({
-        query   : up_array,
-        organism: "hsapiens",
-        srcFilter: ["GO:MF","GO:CC","GO:BP","KEGG","REAC","WP"],
-        correctionMethod: "bonferroni", 
-        userThreshold: .01
-      });
-      console.log(urlQuery);
-
     });
     </script>
     <script>
@@ -88,7 +80,7 @@
           // query   : gene_up_list,
           query : down_array, 
           organism: "hsapiens",
-          srcFilter: ["GO:MF","GO:CC","GO:BP","KEGG","REAC","WP"],
+          srcFilter: ["GO:MF","GO:CC","GO:BP","KEGG","REAC","WP", "HP"],
           correctionMethod: "bonferroni", 
           userThreshold: .01
         });
@@ -99,7 +91,7 @@
       var urlQuery = gOST.getQueryURL({
           query   : down_array,
           organism: "hsapiens",
-          srcFilter: ["GO:MF","GO:CC","GO:BP","KEGG","REAC","WP"],
+          srcFilter: ["GO:MF","GO:CC","GO:BP","KEGG","REAC","WP", "HP"],
           correctionMethod: "bonferroni", 
           userThreshold: .01
         });
@@ -111,7 +103,7 @@
 
     <!-- Inserting the Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <a class="navbar-brand" href="#">Genedalph</a>
+      <a class="navbar-brand" href="{{  url_for('home') }}">Genedalph</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -119,18 +111,36 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item active">
-            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+            <a class="nav-link" href="{{  url_for('home') }}">Home <span class="sr-only">(current)</span></a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#">About</a>
           </li>
         </ul>
         <form class="form-inline my-2 my-lg-0" method= "POST">
-            <input class="form-control mr-sm-2" type="text" placeholder="a lncRNA name" name="lncRNA_name" aria-label="Search">
+            <input class="form-control mr-sm-2" id="lncSep" type="text" placeholder="lncRNA , cell line" aria-label="Search">
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
         </form>
       </div>
     </nav>
+    <!-- autocomplete for the nav bar -->
+    <script type="text/javascript">
+    (function($) {
+      $('#lncSep').autocomplete({
+        source:function(request, response) {
+          $.getJSON("{{ url_for('autocomplete') }}", {
+              autocomplete: request.term, 
+            }, function(data) {
+              response(data.json_list);
+            });
+          }, 
+          minLength: 1, 
+          select: function(event, ui) {
+            console.log(ui.item.value);
+          }
+        });
+      }(jQuery))
+    </script>
     <style>
 
     body {
@@ -160,19 +170,19 @@
           </tr>
         </thead>
         <tbody>
+          {% for row in expression_data %}
           <tr>
               <!-- <td>{{expression_data['Name']}}</td> -->
-              {% for row in expression_data %}
               <td> {{row[0]}} </td>
-              <td>   {{row[1]}} </td>
+              <td> &nbsp;{{row[1]}} </td>
               <td> {{row[2]}} </td>
               <td> {{row[3]}} </td>
               <td> {{row[4]}} </td>
               <td> {{row[5]}} </td>
               <td> {{row[6]}} </td>
               <td> {{row[7]}} </td>
-            </tr>
-            {% endfor %}          
+          </tr>
+          {% endfor %}          
         </tbody>
        </table>
       </div>
@@ -269,8 +279,8 @@
     
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     
-    <!-- <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script> -->
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/v/bs4/jq-3.3.1/dt-1.10.18/datatables.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+    <!-- <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/v/bs4/jq-3.3.1/dt-1.10.18/datatables.min.js"></script> -->
     <script>
         $(document).ready( function () {
             $('#table_id').DataTable();  
