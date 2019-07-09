@@ -93,7 +93,7 @@ form.example::after {
 <div>
 <form id="autocomplete" method= "POST" action="" class="example" style="margin:auto;max-width:300px">
   <input id="lncSep" type="text" placeholder="lncRNA , cell line" name="comma_sep">
-  <button type="submit"><i class="fa fa-search"></i></button>
+  <button id="button" type="submit"><i class="fa fa-search"></i></button>
 </form>
 </div>
 
@@ -143,6 +143,38 @@ form.example::after {
           $('#ledger').DataTable();  
       } );
   </script>
+<!-- Spinner -->
+  <div class="overlay">
+      <div id="loading-img">
+          <img class="col-sm-3 col-sm-offset-4" src="{{ url_for('static', filename='DNA-2s-200px.gif') }}" >
+      </div>
+  </div>
+   
+   
+  <script>
+    $("#button").click(function () {
+        $(".overlay").show();
+    });
+  </script>
+  
+  <style>
+  
+  
+  .overlay {
+      position: fixed; /* Sit on top of the page content */
+      display: none; /* Hidden by default */
+      width: 100%; /* Full width (cover the whole page) */
+      height: 100%; /* Full height (cover the whole page) */
+      top: 0; 
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0,0,0,0.5); /* Black background with opacity */
+      z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
+      cursor: pointer; /* Add a pointer on hover */
+  }
+  </style>       
+  
     <pre>
         ,---.
         /    |
