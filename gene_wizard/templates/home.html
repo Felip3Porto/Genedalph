@@ -8,6 +8,16 @@
   <!-- Bootstrap CSS -->
   <!-- if you have the bootstrap files downloaded you can reference the css folder here -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <!--  jquery and ajax-->
+  <!-- <script
+  src="https://code.jquery.com/jquery-3.4.1.min.js"
+  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+  crossorigin="anonymous"></script> -->
+  
+  <!-- jquery which supports IE -->
+  <link href="https://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" rel="Stylesheet"></link>
+  <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.10.2/jquery-ui.js" ></script>
 <style>
 body {
   font-family: Ubuntu;
@@ -52,7 +62,7 @@ form.example::after {
 
 <!-- Inserting the Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="#">Genedalph</a>
+    <a class="navbar-brand" href="{{  url_for('home') }}">Genedalph</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -60,7 +70,7 @@ form.example::after {
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item active">
-          <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+          <a class="nav-link" href="{{  url_for('home') }}">Home <span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="#">About</a>
@@ -80,12 +90,33 @@ form.example::after {
     <center>Search lncRNAs</center>
 </h2>
 
-
-<!-- button needs an action -->
-<form method= "POST" action="" class="example" style="margin:auto;max-width:300px">
-  <input type="text" placeholder="Search.." name="lncRNA_name">
+<!-- Autocomplete form -->
+<div>
+<form id="autocomplete" method= "POST" action="" class="example" style="margin:auto;max-width:300px">
+  <input id="lncSep" type="text" placeholder="lncRNA , cell line" name="lncRNA_name">
   <button type="submit"><i class="fa fa-search"></i></button>
 </form>
+</div>
+
+<script type="text/javascript">
+$(function() {
+  $('#lncSep').autocomplete({
+    source:function(request, response) {
+      $.getJSON("{{ url_for('autocomplete') }}", {
+        autocomplete: request.term, 
+      }, function(data) {
+        response(data.json_list);
+      });
+    }, 
+    minLength: 1, 
+    select: function(event, ui) {
+      console.log(ui.item.value);
+    }
+  });
+});
+</script>
+
+
 <center>
   <div class="container">
     <h4> Search for any of the lncRNA experiments currently available </h4>
@@ -94,58 +125,12 @@ form.example::after {
             <th> lncRNA  </th>
             <th> cell line </th>
           </tr>
-          <tr>
-              <td> DEANR1 </td>
-              <td> H9 </td>
-          </tr>
-          <tr>
-              <td> DNM3OS </td>
-              <td> SKOV3 </td>
-          </tr>
-          <tr>
-              <td> FDR0 </td>
-              <td> PANCR </td>
-          </tr>
-          <tr>
-              <td> Firre </td>
-              <td> Patski </td>
-          </tr>
-          <tr>
-              <td> FOXA2 </td>
-              <td> H9 </td>
-          </tr>
-          <tr>
-              <td> H19 </td>
-              <td> HTR </td>
-          </tr>
-          <tr>
-              <td> HNF1A-AS1 </td>
-              <td> EAC </td>
-          </tr>
-          <tr>
-              <td> IGFL2-AS1 </td>
-              <td> MCF10A-AT1 </td>
-          </tr>
-          <tr>
-              <td> lincDUSP </td>
-              <td> V481 </td>
-          </tr>
-          <tr>
-              <td> lincDUSP </td>
-              <td> V703 </td>
-          </tr>
-          <tr>
-              <td> MANCR </td>
-              <td> MDA-MB-231 </td>
-          </tr>
-          <tr>
-              <td> PANCR </td>
-              <td> H9-Cardiomyocyte </td>
-          </tr>
-          <tr>
-              <td> SENCR </td>
-              <td> HCASMCs </td>
-          </tr>
+          {% for row in home_table %}
+        <tr>
+          <td> {{row[0]}} </td>
+          <td> {{row[1]}} </td>
+        </tr>
+        {% endfor %}         
        </table>
   </div>
     <pre>

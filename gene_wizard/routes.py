@@ -1,6 +1,6 @@
 # if you want to import a model you need to keep in under the db instance, because it won't know until then
 # need to treat the rest of gene_wizard like a package 
-from flask import Flask, render_template, send_from_directory, send_file, url_for, flash, redirect, request, Markup
+from flask import Flask, render_template, send_from_directory, send_file, url_for, flash, redirect, request, Markup, jsonify
 from gene_wizard import app, mysql
 
 # use a custom agent of the Gprofiler API
@@ -20,6 +20,12 @@ import pandas as pd
 @app.route("/", methods=['GET', 'POST'])#root or homepage
 @app.route("/home") 
 def home():
+
+    cursor1 = mysql.connect().cursor()
+    
+    cursor1.execute("SELECT lncRNA_name, cell_line FROM DEG_lncRNA_roster;")
+    home_table = cursor1.fetchall()
+    cursor1.close()
 
     if request.method == 'POST':
         #Fetch form data 
@@ -46,7 +52,7 @@ def home():
             cursor.execute("SELECT DISTINCT e.gene_symbol FROM DEG_lncRNA_roster d, Expression e WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id AND d.lncRNA_name = '" + lncRNA_name + "' AND e.log2FoldChange < 0;") 
             genes_down = cursor.fetchall()
             # query genes down regulated 
-            cursor.execute("SELECT DISTINCT e.gene_symbol FROM DEG_lncRNA_roster d, Expression e WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id AND d.lncRNA_name = '" + lncRNA_name + "' AND e.log2FoldChange < 0 AND e.padj < .0001;") 
+            cursor.execute("SELECT DISTINCT e.gene_symbol FROM DEG_lncRNA_roster d, Expression e WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id AND d.lncRNA_name = '" + lncRNA_name + "' AND e.log2FoldChange < 0 AND e.padj < .3;") 
             GOSTgenes_down = cursor.fetchall()
             query_down = [i[0] for i in GOSTgenes_down]
             # seems like genes_down etc are very large even on the API side to handle
@@ -56,7 +62,7 @@ def home():
             cursor.execute("SELECT DISTINCT e.gene_symbol FROM DEG_lncRNA_roster d, Expression e WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id AND d.lncRNA_name = '" + lncRNA_name + "' AND e.log2FoldChange > 0;") 
             genes_up = cursor.fetchall()
             # query genes up regulated 
-            cursor.execute("SELECT DISTINCT e.gene_symbol FROM DEG_lncRNA_roster d, Expression e WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id AND d.lncRNA_name = '" + lncRNA_name + "' AND e.log2FoldChange > 0 AND e.padj < .0001;") 
+            cursor.execute("SELECT DISTINCT e.gene_symbol FROM DEG_lncRNA_roster d, Expression e WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id AND d.lncRNA_name = '" + lncRNA_name + "' AND e.log2FoldChange > 0 AND e.padj < .3;") 
             GOSTgenes_up = cursor.fetchall()
             # needs to be done before the cursor close
             # cursor object is not like a list at all 
@@ -73,7 +79,7 @@ def home():
             return "That lncRNA is not available in genedalf"
         else:
             #query the upregulated and downregulated genes 
-            sources = ["GO:MF","GO:CC","GO:BP","KEGG","REAC","WP"]
+            sources = ["GO:MF","GO:CC","GO:BP","KEGG","REAC","WP", "HP"]
             # tricky cursor needs to be put in a python list 
 
             # even after a stringent filters we are capped at 80   
@@ -82,9 +88,14 @@ def home():
             if len(query_up) > 70:
                 query_up = query_up[:70]
 
+            # Remove None type variables
+            query_down = list(filter(None.__ne__, query_down))
+            query_up = list(filter(None.__ne__, query_up))
+
             # GET dataframes of pathways 
-            GOSTup = gp.profile(organism='hsapiens', query = query_up, sources = sources, no_evidences=False, user_threshold = .3) 
-            GOSTdown = gp.profile(organism='hsapiens', query = query_down, sources = sources, no_evidences=False, user_threshold = .3) 
+            # getting assertion error if the query yeilds no results
+            GOSTup = gp.profile(organism='hsapiens', query = query_up, sources = sources, no_evidences=False, user_threshold = .5) 
+            GOSTdown = gp.profile(organism='hsapiens', query = query_down, sources = sources, no_evidences=False, user_threshold = .5) 
             # get lists for plotting 
             # 3 things GOids, -log(adjP), and terms
             xGOtermsUp = GOSTup.native.to_list()
@@ -143,7 +154,7 @@ def home():
             
         cursor.close()
 
-    return render_template('home.html') 
+    return render_template('home.html', home_table = home_table) 
     # that posts = posts bit allows the html to reference our data inside here 
     # also remember that flask checks for a folder called templates
 
@@ -161,7 +172,7 @@ def gProfilerTest():
         cursor.execute("SELECT DISTINCT e.gene_symbol FROM DEG_lncRNA_roster d, Expression e WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id AND d.lncRNA_name = 'MANCR' AND e.log2FoldChange < 0;") 
         genes_down = cursor.fetchall()
         # query genes down regulated 
-        cursor.execute("SELECT DISTINCT e.gene_symbol FROM DEG_lncRNA_roster d, Expression e WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id AND d.lncRNA_name = 'MANCR' AND e.log2FoldChange < 0 AND e.padj < .0000001;") 
+        cursor.execute("SELECT DISTINCT e.gene_symbol FROM DEG_lncRNA_roster d, Expression e WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id AND d.lncRNA_name = 'MANCR' AND e.log2FoldChange < 0 AND e.padj < .3;") 
         GOSTgenes_down = cursor.fetchall()
         query_down = [i[0] for i in GOSTgenes_down]
         # seems like genes_down etc are very large even on the API side to handle
@@ -171,7 +182,7 @@ def gProfilerTest():
         cursor.execute("SELECT DISTINCT e.gene_symbol FROM DEG_lncRNA_roster d, Expression e WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id AND d.lncRNA_name = 'MANCR' AND e.log2FoldChange > 0;") 
         genes_up = cursor.fetchall()
         # query genes up regulated 
-        cursor.execute("SELECT DISTINCT e.gene_symbol FROM DEG_lncRNA_roster d, Expression e WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id AND d.lncRNA_name = 'MANCR' AND e.log2FoldChange > 0 AND e.padj < .0000001;") 
+        cursor.execute("SELECT DISTINCT e.gene_symbol FROM DEG_lncRNA_roster d, Expression e WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id AND d.lncRNA_name = 'MANCR' AND e.log2FoldChange > 0 AND e.padj < .3;") 
         GOSTgenes_up = cursor.fetchall()
         # needs to be done before the cursor close
         # cursor object is not like a list at all 
@@ -182,7 +193,7 @@ def gProfilerTest():
     
     print(len(query_up))
     #query the upregulated and downregulated genes 
-    sources = ["GO:MF","GO:CC","GO:BP","KEGG","REAC","WP"]
+    sources = ["GO:MF","GO:CC","GO:BP","KEGG","REAC","WP", "HP"]
     # tricky cursor needs to be put in a python list 
 
     # even after a stringent filters we are capped at 80   
@@ -192,8 +203,8 @@ def gProfilerTest():
         query_up = query_up[:70]
 
     # GET dataframes of pathways 
-    GOSTup = gp.profile(organism='hsapiens', query = query_up, sources = sources, no_evidences=False, user_threshold = .3) 
-    GOSTdown = gp.profile(organism='hsapiens', query = query_down, sources = sources, no_evidences=False, user_threshold = .3) 
+    GOSTup = gp.profile(organism='hsapiens', query = query_up, sources = sources, no_evidences=False, user_threshold = .5) 
+    GOSTdown = gp.profile(organism='hsapiens', query = query_down, sources = sources, no_evidences=False, user_threshold = .5) 
     # get lists for plotting 
     # 3 things GOids, -log(adjP), and terms
     xGOtermsUp = GOSTup.native.to_list()
@@ -255,4 +266,14 @@ def send_image(filename):
     # filename = url_for(filename)
     return send_file(filename, mimetype='image/png')
     # return send_from_directory("Data" , filename)
+
+NAMES=["ruby","MIR29A","EPB41L4A-AS1","KB-1471A8.1", "RP11-973D8.4", "XLOC_029037","XLOC_014806","MIR17HG","XLOC_042889","XLOC_010347","RP11-734K2.4"]
+
+@app.route('/autocomplete',methods=['GET'])
+def autocomplete():
+    search = request.args.get('autocomplete')
+    app.logger.debug(search)
     
+    query = [s for s in NAMES if str(search) in s]
+    
+    return jsonify(json_list=query) 
