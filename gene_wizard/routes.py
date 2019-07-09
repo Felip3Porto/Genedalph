@@ -41,19 +41,20 @@ def home():
     if request.method == 'POST':
         #Fetch form data 
         DEG_lncRNA_roster = request.form 
-        lncRNA_name = DEG_lncRNA_roster['lncRNA_name']
+        comma_sep = DEG_lncRNA_roster['comma_sep']
         # strip things to prevents SQL injection 
-        lncRNA_name = lncRNA_name.replace(';','')
-        lncRNA_name = lncRNA_name.replace('=','')
-        lncRNA_name = lncRNA_name.replace('"','')
+        comma_sep = comma_sep.replace(';','')
+        comma_sep = comma_sep.replace('=','')
+        comma_sep = comma_sep.replace('"','')
 
-        # cell_line = DEG_lncRNA_roster['cell_line']
+        lncRNA_name , cell_line = comma_sep.split(',', 1)
 
-        #make a cursor to use 
+        print(lncRNA_name)
+        print(cell_line)
+        
+        #make a cursor to use to connect to mysql
         cursor = mysql.connect().cursor()
-        # cursor.execute("SELECT e.ENSG_id, e.gene_symbol, e.baseMean, e.log2FoldChange, e.lfcSE, e.pvalue, e.stat, e.padj")
-        # cursor.execute("FROM Expression e, DEG_lncRNA_roster d")
-        # cursor.execute("WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id and d.lncRNA_name = " + lncRNA_name + ";")
+        
         try: 
             # expression data 
             cursor.execute("SELECT e.ENSG_id, e.gene_symbol, ROUND(e.baseMean, 3), ROUND(e.log2FoldChange, 3), ROUND(e.lfcSE, 3), ROUND(e.pvalue, 3) , ROUND(e.stat, 3), ROUND(e.padj, 3) FROM Expression e, DEG_lncRNA_roster d WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id and d.lncRNA_name = '" + lncRNA_name + "';")
