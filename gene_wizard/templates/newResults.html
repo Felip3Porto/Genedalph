@@ -152,7 +152,7 @@
 <!-- 1) Table 2)clouds 3) button bar 4) Graph -->
    <body>
     
-      <h2>Differential Gene Expression data after the knockdown of {{lncRNA_name}}.</h2>
+      <h2><br/>Differential Gene Expression data after the knockdown of {{lncRNA_name}} in the {{cell_line}} cell line.</h2>
 <!-- safsdafs -->
       <div>
         <table id="table_id" class="display table-striped table-hover table-condensed">
@@ -193,18 +193,18 @@
             <div class="row">
               <!-- lets have the up on the left and down on the right -->
                 <div class="col-xs-6">
-                  <h3>Word cloud of up regulated functions</h3>
+                  <h3><hr/>Word cloud of up regulated functions</h3>
                     <div id="UpCloud"></div>
                 </div>
                 <div class="col-xs-6">
-                    <h3>Word cloud of down regulated functions</h3>
+                    <h3><hr/>Word cloud of down regulated functions</h3>
                     <div id="DownCloud"></div>
                   </div>
               </div>
           </div>
       
           <!-- Buttons for downloads -->
-          <div class="btn-group" role="group" aria-label="Buttons for downloading queries">
+          <div class="btn-group" style="align-content:center;" role="group" aria-label="Buttons for downloading queries">
             <!-- add a button to download a line separated list -->
             <!-- <button type="button" class="btn btn-secondary">1</button> -->
               <button target="_blank" type="button" class="btn btn-secondary" onclick="window.open('https://biit.cs.ut.ee/gprofiler/gost/?organism=hsapiens&all_results=false&ordered=false&no_iea=false&measure_underrepresentation=false&significance_threshold_method=bonferroni&domain_scope=annotated&sources=GO%3AMF%2CGO%3ACC%2CGO%3ABP%2CKEGG%2CREAC%2CWP&no_evidences=true&user_threshold=1e-8');">Visit Gprofiler for extensive reults for queried genes</button>
@@ -225,10 +225,8 @@
                 
                 // Start file download.
                 document.getElementById("up-btn").addEventListener("click", function(){
-                    // Generate download of hello.txt file with some content
                     var text = "And blood-black nothingness began to spin... A system of cells interlinked within cells interlinked within cells interlinked within one stem... And dreadfully distinct against the dark, a tall white fountain played.";
-                    //document.getElementById("text-val").value;
-                    var filename = "{{lncRNA_name}}" +"-genes-up.txt";
+                    var filename = "{{lncRNA_name}}"+ "-" + "{{cell_line}}" + "-genes-up.txt";
                     var genes_up = {{ genes_up|tojson }};
                     var newsep = genes_up.join("\n");
                    
@@ -253,7 +251,7 @@
                 // Start file download.
                 document.getElementById("dwn-btn").addEventListener("click", function(){
                     
-                    var filename = "{{lncRNA_name}}" +"-genes-down.txt";
+                    var filename = "{{lncRNA_name}}" + "-" + "{{cell_line}}"+"-genes-down.txt";
                     // newline sep the data 
                     var genes_down = {{ genes_down|tojson }};
                     var newsep = genes_down.join("\n");
@@ -267,6 +265,7 @@
         
         <!-- div_holder is JS graph from plotly -->
           <div id="plotly-graph">
+            <hr/>
             {{ div_holder }}
           </div>
 
@@ -279,8 +278,8 @@
     
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
-    <!-- <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/v/bs4/jq-3.3.1/dt-1.10.18/datatables.min.js"></script> -->
+    <!-- <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script> -->
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/v/bs4/jq-3.3.1/dt-1.10.18/datatables.min.js"></script>
     <script>
         $(document).ready( function () {
             $('#table_id').DataTable();  
