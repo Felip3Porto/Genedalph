@@ -89,7 +89,7 @@ def home():
         # .commit seems to be for inserting only
         
         if data is None:
-            return "That lncRNA is not available in genedalf"
+            return render_template("ValueError.html")
         else:
             #query the upregulated and downregulated genes 
             sources = ["GO:MF","GO:CC","GO:BP","KEGG","REAC","WP", "HP"]
@@ -106,39 +106,19 @@ def home():
             query_up = list(filter(None.__ne__, query_up))
 
             # GET dataframes of pathways 
-            # getting assertion error if the query yeilds no results
-            # try:
-            # except AssertionError:
-            #     pass
+            # Get lists of DEG genes for plotting 
+            # 3 main things things GOids, -log(adjP), and terms
+            # remember that pval is already corrected and the bar is -log(padj)
             try:
                 GOSTup = gp.profile(organism='hsapiens', query = query_up, sources = sources, no_evidences=False, user_threshold = .5) 
-            except AssertionError:
-                pass 
-            try:
-                GOSTdown = gp.profile(organism='hsapiens', query = query_down, sources = sources, no_evidences=False, user_threshold = .5) 
-            except AssertionError:
-                pass
-            
-            # get lists for plotting 
-            # 3 things GOids, -log(adjP), and terms
-            # remember that pval is already corrected and the bar is -log(padj)
-            xGOtermsUp = GOSTup.native.to_list()
-            listPadjUp = GOSTup.p_value.to_list()
-            yPadjUp = []
-            for e in listPadjUp:
-                yPadjUp.append(-math.log(e))
-            GOtextUp = GOSTup.name.to_list()
-            xGOtermsDown = GOSTdown.native.to_list()
-            listPadjDown = GOSTdown.p_value.to_list()
-            yPadjDown = []
-            for i in listPadjDown:
-                yPadjDown.append(-math.log(i))
-            GOtextDown = GOSTdown.name.to_list()
-
-            dynamic_title = "Top Significant Differentially Expressed functions after " + lncRNA_name + "'s knockdown in the " + cell_line + " cell line"
-
-            ## plotly time 
-            traceUp = go.Bar(
+                xGOtermsUp = GOSTup.native.to_list()
+                listPadjUp = GOSTup.p_value.to_list()
+                yPadjUp = []
+                for e in listPadjUp:
+                    yPadjUp.append(-math.log(e))
+                GOtextUp = GOSTup.name.to_list()
+                # plotly for up regulated portion  
+                traceUp = go.Bar(
                 x=xGOtermsUp,
                 y=yPadjUp,
                 text=GOtextUp,
@@ -150,7 +130,20 @@ def home():
                     ),
                     opacity=0.6
                 )
-            traceDown = go.Bar(
+
+            except AssertionError:
+                pass 
+            try:
+                GOSTdown = gp.profile(organism='hsapiens', query = query_down, sources = sources, no_evidences=False, user_threshold = .5) 
+                GOtextUp = GOSTup.name.to_list()
+                xGOtermsDown = GOSTdown.native.to_list()
+                listPadjDown = GOSTdown.p_value.to_list()
+                yPadjDown = []
+                for i in listPadjDown:
+                    yPadjDown.append(-math.log(i))
+                GOtextDown = GOSTdown.name.to_list()
+                # plotly for down regulated portion 
+                traceDown = go.Bar(
                 x=xGOtermsDown,
                 y=yPadjDown,
                 text=GOtextDown,
@@ -162,10 +155,63 @@ def home():
                     ),
                     opacity=0.6
                 )
-            # keep the meat in trace 0 
+
+            except AssertionError:
+                pass
+            
+            # xGOtermsUp = GOSTup.native.to_list()
+            # listPadjUp = GOSTup.p_value.to_list()
+            # yPadjUp = []
+            # for e in listPadjUp:
+            #     yPadjUp.append(-math.log(e))
+            # GOtextUp = GOSTup.name.to_list()
+            # xGOtermsDown = GOSTdown.native.to_list()
+            # listPadjDown = GOSTdown.p_value.to_list()
+            # yPadjDown = []
+            # for i in listPadjDown:
+            #     yPadjDown.append(-math.log(i))
+            # GOtextDown = GOSTdown.name.to_list()
+
+            dynamic_title = "Top Significant Differentially Expressed functions after " + lncRNA_name + "'s knockdown in the " + cell_line + " cell line"
+
+            ## plotly time 
+            # traceUp = go.Bar(
+            #     x=xGOtermsUp,
+            #     y=yPadjUp,
+            #     text=GOtextUp,
+            #     name='Significantly Up Regulated Genes',
+            #     marker=dict(color='rgb(158,202,225)',
+            #     line=dict(
+            #         color='rgb(8,48,107)',
+            #         width=1.5,)
+            #         ),
+            #         opacity=0.6
+            #     )
+            # traceDown = go.Bar(
+            #     x=xGOtermsDown,
+            #     y=yPadjDown,
+            #     text=GOtextDown,
+            #     name='Significantly Down Regulated Genes',
+            #     marker=dict(color='rgb(214,39,40)',
+            #     line=dict(
+            #         color='rgb(247,182,210)',
+            #         width=1.5,)
+            #         ),
+            #         opacity=0.6
+            #     )
+            
 
             # try to unify both graphs into 1 Figure 
-            data = [traceUp, traceDown]
+            try: 
+                if traceDown is None:
+                    data = traceUp
+                elif traceUp is None:
+                    data = traceDown
+                else:
+                    data = [traceUp, traceDown]
+            except UnboundLocalError:
+                return render_template("NoPathwaysError.html")
+            
             layout= go.Layout(
                 title= dynamic_title,
                 yaxis= dict(title = '-log(adjusted p-value)')

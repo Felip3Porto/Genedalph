@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <link rel="shortcut icon" href="{{ url_for('favicon') }}">
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <!-- if you have the bootstrap files downloaded you can reference the css folder here -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <!-- Custom CSS  -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+
+    <!-- jquery which supports IE -->
+    <link href="https://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" rel="Stylesheet"></link>
+    <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.10.2/jquery-ui.js" ></script>
+    
+    <title>No pathways found</title>
+
+    </head>
+    <!-- Inserting the Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <a class="navbar-brand" href="{{  url_for('home') }}">Genedalph</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="{{  url_for('home') }}">Home <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">About</a>
+          </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0" method= "POST">
+            <input class="form-control mr-sm-2" id="lncSep" type="text" placeholder="lncRNA , cell line" name="comma_sep" aria-label="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        </form>
+      </div>
+    </nav>
+    <!-- autocomplete for the nav bar -->
+    <script type="text/javascript">
+    (function($) {
+      $('#lncSep').autocomplete({
+        source:function(request, response) {
+          $.getJSON("{{ url_for('autocomplete') }}", {
+              autocomplete: request.term, 
+            }, function(data) {
+              response(data.json_list);
+            });
+          }, 
+          minLength: 1, 
+          select: function(event, ui) {
+            console.log(ui.item.value);
+          }
+        });
+      }(jQuery))
+    </script>
+    <style>
+
+    body {
+      font-family: Ubuntu;
+    }
+    </style>
+
+<!-- BODY STARTS HERE ############################################################ -->
+<!-- 1) Table 2)clouds 3) button bar 4) Graph -->
+   <body style="margin:15;padding:15">
+    <div id="container">
+        <h2><br/>Request does not have enriched pathways<hr/></h2>
+      <h3>The lncRNA or cell line you searched does not have any pathways enriched with it's affected genes, <br></h3>
+      <h3>or it affects too few genes to enrich with a functional pathway. Be sure to check this lncRNA again as<br></h3>
+      <h3>as this may change in the future as this tool uses the latest pathway databases. <hr/></h3>
+
+    </div>
+
+    <div>
+        <center>
+            <img class="col-sm-3 col-sm-offset-4" src="{{ url_for('static', filename='errors-but-Chill.gif') }}">
+        </center> 
+    </div>
+  
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    
+
+  </body>
+</html> 
+
