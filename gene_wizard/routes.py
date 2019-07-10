@@ -48,8 +48,10 @@ def home():
         comma_sep = comma_sep.replace('=','')
         comma_sep = comma_sep.replace('"','')
 
-        lncRNA_name , cell_line = comma_sep.split(',', 1)
-
+        try:
+            lncRNA_name , cell_line = comma_sep.split(',', 1)
+        except ValueError:
+            return render_template("ValueError.html")
         
         #make a cursor to use to connect to mysql
         cursor = mysql.connect().cursor()
