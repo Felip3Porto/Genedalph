@@ -19,7 +19,7 @@
     <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.10.2/jquery-ui.js" ></script>
     
-    <title>No pathways found</title>
+    <title>About Genedalph</title>
 
     </head>
     <!-- Inserting the Navbar -->
@@ -38,14 +38,14 @@
             <a class="nav-link" href="{{  url_for('about') }}">About</a>
           </li>
         </ul>
-        <form class="form-inline my-2 my-lg-0" method= "POST">
+        <!-- <form class="form-inline my-2 my-lg-0" method= "POST">
             <input class="form-control mr-sm-2" id="lncSep" type="text" placeholder="lncRNA , cell line" name="comma_sep" aria-label="Search">
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-        </form>
+        </form> -->
       </div>
     </nav>
     <!-- autocomplete for the nav bar -->
-    <script type="text/javascript">
+    <!-- <script type="text/javascript">
     (function($) {
       $('#lncSep').autocomplete({
         source:function(request, response) {
@@ -61,7 +61,7 @@
           }
         });
       }(jQuery))
-    </script>
+    </script> -->
     <style>
 
     body {
@@ -73,17 +73,29 @@
 <!-- 1) Table 2)clouds 3) button bar 4) Graph -->
    <body style="margin:15;padding:15">
     <div id="container">
-        <h2><br/>Request does not have enriched pathways<hr/></h2>
-      <h3>The lncRNA or cell line you searched does not have any pathways enriched with it's affected genes, <br></h3>
-      <h3>or it affects too few genes to enrich with a functional pathway. Be sure to check this lncRNA again as<br></h3>
-      <h3>as this may change in the future as this tool uses the latest pathway databases. <hr/></h3>
-
-    </div>
-
-    <div>
-        <center>
-            <img class="col-sm-3 col-sm-offset-4" src="{{ url_for('static', filename='errors-but-Chill.gif') }}">
-        </center> 
+        <h2><br/>Genedalph is a web-tool dedicated to annotating long non-coding RNAs (lncRNAs) with functions<hr/></h2>
+        <p>
+            Traditionally, lncRNAs have been viewed as genetic “junk”, but we are now seeing their influence increase
+            in neurological diseases, cancer, and heart disease. Yet, our understanding of lncRNA functional annotations 
+            is limited, and the reporting of these functional annotations are not easily accessible to experimentalists 
+            and health professionals. 
+        </p>
+        <p>
+            Thereby, it is of the utmost importance to observe which genetic elements are dysregulated in the absence of
+             a lncRNA, which can give further insights into understanding the functional composition and an overall break 
+             down of role of lncRNAs in cellular mechanisms. 
+        </p>
+        <p>
+            Genedalph accomplishes functional annotation by hosting specially curated RNA-seq data from lncRNA knock down 
+            experiments, querying the most up to date pathway databases with the Gprofiler API, and providing a visualization 
+            of the different functional terms. Currently we host 43 different lncRNAs across 14 different human cell lines, 
+            which affects a total 32,674 unique genes.
+        </p>
+        <p>
+            We designed the database to be extremely simple to query differentially expressed genes across different cell 
+            lines, and made it simple to add future records of lncRNAs. If you don’t see a lncRNA you would like to see 
+            annotated: please contact us by sending a link of the paper of interest with RNA-seq data available. 
+        </p>
     </div>
   
     <!-- Optional JavaScript -->

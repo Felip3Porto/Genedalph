@@ -1,12 +1,9 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"> 
 
-<!doctype html>
-<html lang="en">
-  <head>
     <link rel="shortcut icon" href="{{ url_for('favicon') }}">
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
     <!-- Bootstrap CSS -->
     <!-- if you have the bootstrap files downloaded you can reference the css folder here -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -22,7 +19,8 @@
     
     <title>Genedalph Results</title>
 
-    <script src="static/biojs-vis-gprofiler/build/biojsvisgprofiler.min.js"></script>
+    <!-- <script src="static/biojs-vis-gprofiler/build/biojsvisgprofiler.min.js"></script> -->
+    <script src="{{ url_for('static', filename='biojs-vis-gprofiler/build/biojsvisgprofiler.min.js') }}"></script>
     <script type="text/javascript">
 
     document.addEventListener("DOMContentLoaded", function(e) {
@@ -49,7 +47,7 @@
         organism: "hsapiens",
         srcFilter: ["GO:MF","GO:CC","GO:BP","KEGG","REAC","WP", "HP"],
         correctionMethod: "bonferroni", 
-        userThreshold: .01
+        userThreshold: .3
       });
       
     });
@@ -83,7 +81,7 @@
           organism: "hsapiens",
           srcFilter: ["GO:MF","GO:CC","GO:BP","KEGG","REAC","WP", "HP"],
           correctionMethod: "bonferroni", 
-          userThreshold: .01
+          userThreshold: .3
         });
         
         gOST = gp.getGProfiler({});
@@ -94,7 +92,7 @@
           organism: "hsapiens",
           srcFilter: ["GO:MF","GO:CC","GO:BP","KEGG","REAC","WP", "HP"],
           correctionMethod: "bonferroni", 
-          userThreshold: .01
+          userThreshold: .3
         });
         console.log(urlQuery);
   
@@ -114,8 +112,8 @@
           <li class="nav-item active">
             <a class="nav-link" href="{{  url_for('home') }}">Home <span class="sr-only">(current)</span></a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">About</a>
+          <li class="nav-item active">
+            <a class="nav-link" href="{{  url_for('about') }}">About</a>
           </li>
         </ul>
         <form class="form-inline my-2 my-lg-0" method= "POST">
@@ -172,7 +170,7 @@
         </thead>
         <tbody>
           {% for row in expression_data %}
-          <tr>
+          <tr ng-repeat="(key, val) in wordcounts">
               <!-- <td>{{expression_data['Name']}}</td> -->
               <td> {{row[0]}} </td>
               <td> &nbsp;{{row[1]}} </td>
@@ -187,6 +185,7 @@
         </tbody>
        </table>
       </div>
+      <!-- <img class="col-sm-3 col-sm-offset-4" src="{{ url_for('static', filename='DNA-2s-200px.gif') }}" ng-show="loading"> -->
     </div>
 
     <!-- Try to make them side by side  -->

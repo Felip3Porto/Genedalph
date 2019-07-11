@@ -30,7 +30,6 @@ NAMES = ["DEANR1,H9","DNM3OS,SKOV3","Firre,Patski","FOXA2,H9","H19,HTR","HNF1A-A
 #because they are in the package now ya gotta have the dot before your own created objects
 
 @app.route("/", methods=['GET', 'POST'])#root or homepage
-@app.route("/home") 
 def home():
 
     cursor1 = mysql.connect().cursor()
@@ -65,7 +64,7 @@ def home():
             cursor.execute("SELECT DISTINCT e.gene_symbol FROM DEG_lncRNA_roster d, Expression e WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id AND d.lncRNA_name = '" + lncRNA_name + "' AND d.cell_line = '" + cell_line + "' AND e.log2FoldChange < 0;") 
             genes_down = cursor.fetchall()
             # query genes down regulated 
-            cursor.execute("SELECT DISTINCT e.gene_symbol FROM DEG_lncRNA_roster d, Expression e WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id AND d.lncRNA_name = '" + lncRNA_name + "' AND d.cell_line = '" + cell_line + "' AND e.log2FoldChange < 0 AND e.padj < .3;") 
+            cursor.execute("SELECT DISTINCT e.gene_symbol FROM DEG_lncRNA_roster d, Expression e WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id AND d.lncRNA_name = '" + lncRNA_name + "' AND d.cell_line = '" + cell_line + "' AND e.log2FoldChange < 0 ORDER BY e.padj ASC;") 
             GOSTgenes_down = cursor.fetchall()
             query_down = [i[0] for i in GOSTgenes_down]
             # seems like genes_down etc are very large even on the API side to handle
@@ -75,7 +74,7 @@ def home():
             cursor.execute("SELECT DISTINCT e.gene_symbol FROM DEG_lncRNA_roster d, Expression e WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id AND d.lncRNA_name = '" + lncRNA_name + "' AND d.cell_line = '" + cell_line + "' AND e.log2FoldChange > 0;") 
             genes_up = cursor.fetchall()
             # query genes up regulated 
-            cursor.execute("SELECT DISTINCT e.gene_symbol FROM DEG_lncRNA_roster d, Expression e WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id AND d.lncRNA_name = '" + lncRNA_name + "' AND d.cell_line = '" + cell_line + "' AND e.log2FoldChange > 0 AND e.padj < .3;") 
+            cursor.execute("SELECT DISTINCT e.gene_symbol FROM DEG_lncRNA_roster d, Expression e WHERE d.roster_id = e.DEG_lncRNA_roster_roster_id AND d.lncRNA_name = '" + lncRNA_name + "' AND d.cell_line = '" + cell_line + "' AND e.log2FoldChange > 0 ORDER BY e.padj ASC;") 
             GOSTgenes_up = cursor.fetchall()
             # needs to be done before the cursor close
             # cursor object is not like a list at all 
@@ -135,7 +134,6 @@ def home():
                 pass 
             try:
                 GOSTdown = gp.profile(organism='hsapiens', query = query_down, sources = sources, no_evidences=False, user_threshold = .5) 
-                GOtextUp = GOSTup.name.to_list()
                 xGOtermsDown = GOSTdown.native.to_list()
                 listPadjDown = GOSTdown.p_value.to_list()
                 yPadjDown = []
@@ -159,49 +157,11 @@ def home():
             except AssertionError:
                 pass
             
-            # xGOtermsUp = GOSTup.native.to_list()
-            # listPadjUp = GOSTup.p_value.to_list()
-            # yPadjUp = []
-            # for e in listPadjUp:
-            #     yPadjUp.append(-math.log(e))
-            # GOtextUp = GOSTup.name.to_list()
-            # xGOtermsDown = GOSTdown.native.to_list()
-            # listPadjDown = GOSTdown.p_value.to_list()
-            # yPadjDown = []
-            # for i in listPadjDown:
-            #     yPadjDown.append(-math.log(i))
-            # GOtextDown = GOSTdown.name.to_list()
-
             dynamic_title = "Top Significant Differentially Expressed functions after " + lncRNA_name + "'s knockdown in the " + cell_line + " cell line"
 
-            ## plotly time 
-            # traceUp = go.Bar(
-            #     x=xGOtermsUp,
-            #     y=yPadjUp,
-            #     text=GOtextUp,
-            #     name='Significantly Up Regulated Genes',
-            #     marker=dict(color='rgb(158,202,225)',
-            #     line=dict(
-            #         color='rgb(8,48,107)',
-            #         width=1.5,)
-            #         ),
-            #         opacity=0.6
-            #     )
-            # traceDown = go.Bar(
-            #     x=xGOtermsDown,
-            #     y=yPadjDown,
-            #     text=GOtextDown,
-            #     name='Significantly Down Regulated Genes',
-            #     marker=dict(color='rgb(214,39,40)',
-            #     line=dict(
-            #         color='rgb(247,182,210)',
-            #         width=1.5,)
-            #         ),
-            #         opacity=0.6
-            #     )
-            
-
             # try to unify both graphs into 1 Figure 
+            # failsafe to ensure if one query is empty or yields no results 
+            # It will try displaying other data. 
             try: 
                 if traceDown is None:
                     data = traceUp
@@ -227,9 +187,10 @@ def home():
     # that posts = posts bit allows the html to reference our data inside here 
     # also remember that flask checks for a folder called templates
 
-# @app.route("/about") 
-# def about():
-#     return render_template('about.html', title = 'About')
+@app.route("/about",  methods=['GET', 'POST']) 
+def about():
+    
+    return render_template('about.html', title = 'About')
 
 
 @app.route('/favicon')
